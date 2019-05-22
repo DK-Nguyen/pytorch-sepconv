@@ -1,1 +1,3 @@
 batch_size: 4
+kernel_size: 51
+Epoch: 0  
