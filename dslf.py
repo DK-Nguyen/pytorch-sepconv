@@ -371,7 +371,7 @@ def dslfTest(dslfInput, fileNames, distance, model):
     '''
     run the model on the DSLF dataset
     '''
-    folderName = os.path.basename(os.path.normpath(dslfInput))
+    folderName = os.path.basename(os.path.normpath(dslfInput)) # get the name of the folder (Castle/Holiday/Seal&Balls)
     dslfOutputName = folderName + 'Interpolated' + str(distance)
     dslfOutput = os.path.join(os.getcwd(), 'DSLF', dslfOutputName)
     # for each round:
@@ -381,13 +381,13 @@ def dslfTest(dslfInput, fileNames, distance, model):
     for key, value in fileNames.items(): # value is a tuple of lists: (firstIms, secIms, outputIms) for each round
         if key != 'final':
             print('round', key)
-            for i in value:
-                for idx, name in enumerate(value[0]):
-                    firstImPath = os.path.join(dslfInput, name)
-                    secImPath = os.path.join(dslfInput, value[1][idx])
-                    outputImPath = os.path.join(dslfInput, value[2][idx])
-                    mytest = bigTest()
-                    mytest.test(model, firstImPath, secImPath, outputImPath)
+
+            for idx, name in enumerate(value[0]):
+                firstImPath = os.path.join(dslfInput, name)
+                secImPath = os.path.join(dslfInput, value[1][idx])
+                outputImPath = os.path.join(dslfInput, value[2][idx])
+                mytest = bigTest()
+                mytest.test(model, firstImPath, secImPath, outputImPath)
     
     # make the output folder
     if not os.path.exists(dslfOutput):
@@ -413,11 +413,6 @@ if __name__ == "__main__":
     kernel_size = args.kernel
     distance = args.distance
     
-#     print(input_dir)
-#     print(output_dir)
-#     print(modelPath)
-#     print(kernel_size)
-    
     model = SepConvNet(kernel_size=kernel_size)
     model.cuda().eval()
     
@@ -431,17 +426,15 @@ if __name__ == "__main__":
         castleInput = os.path.join(input_dir, 'Castle')
         holidayInput = os.path.join(input_dir, 'Holiday')
         sealBallsInput = os.path.join(input_dir, 'Seal&Balls')
-        castleOutput = os.path.join(output_dir, 'CastleInterpolated')
-        holidayOutput = os.path.join(output_dir, 'HolidayInterpolated')
-        sealBallsOutput = os.path.join(output_dir, 'SealBallsInterpolated')
-        print(castleInput)
-        print(holidayInput)
-        print(sealBallsInput)
-        print(castleOutput)
-        print(holidayOutput)
-        print(sealBallsOutput)
-        fileNames = getFileNames(castleInput, distance, printFileNames=True)
-#         print(fileNames)
+        
+        castleFileNames = getFileNames(castleInput, distance, printFileNames=True)
+        dslfTest(castleInput, castleFileNames, distance, model)
+        
+        holidayFileNames = getFileNames(holidayInput, distance, printFileNames=True)
+        dslfTest(holidayInput, holidayFileNames, distance, model)
+        
+        sealBallsFileNames = getFileNames(sealBallsInput, distance, printFileNames=True)
+        dslfTest(sealBallsInput, sealBallsFileNames, distance, model)
 
             
     
