@@ -372,8 +372,12 @@ def dslfTest(dslfInput, fileNames, distance, model):
     run the model on the DSLF dataset
     '''
     folderName = os.path.basename(os.path.normpath(dslfInput)) # get the name of the folder (Castle/Holiday/Seal&Balls)
-    dslfOutputName = folderName + 'Interpolated' + str(distance)
+    dslfOutputName = folderName + 'Interpolated' + str(distance) + args.model
     dslfOutput = os.path.join(os.getcwd(), 'DSLF', dslfOutputName)
+    # make the output folder
+    if not os.path.exists(dslfOutput):
+        os.makedirs(dslfOutput)
+        
     # for each round:
     #     for each image in the firstIms list:
     #         find the path to the corresponding second image and output image names
@@ -387,10 +391,6 @@ def dslfTest(dslfInput, fileNames, distance, model):
                 outputImPath = os.path.join(dslfInput, value[2][idx])
                 mytest = bigTest()
                 mytest.test(model, firstImPath, secImPath, outputImPath)
-    
-    # make the output folder
-    if not os.path.exists(dslfOutput):
-        os.makedirs(dslfOutput)
     
     # move the interpolated files to the output folder
     for name in fileNames['final']:
