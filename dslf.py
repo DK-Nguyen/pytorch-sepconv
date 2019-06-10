@@ -25,8 +25,8 @@ import argparse
 # commands for testing on small dataset
 # python dslf.py --mode small --input my_input --output my_output
 
-# commands for testing on dslf dataset
-# python dslf.py --distance 16
+# exp commands for testing on dslf dataset
+# python dslf.py --model l1 --distance 16 
 
 parser = argparse.ArgumentParser(description='DSLF Test')
 
@@ -380,8 +380,7 @@ def dslfTest(dslfInput, fileNames, distance, model):
     #         apply the model on the first image and second image, output the image with corresponding name
     for key, value in fileNames.items(): # value is a tuple of lists: (firstIms, secIms, outputIms) for each round
         if key != 'final':
-            print('round', key)
-
+            print('round: {}, dataset: {}, distance: {}'.format(key,folderName,distance))
             for idx, name in enumerate(value[0]):
                 firstImPath = os.path.join(dslfInput, name)
                 secImPath = os.path.join(dslfInput, value[1][idx])
