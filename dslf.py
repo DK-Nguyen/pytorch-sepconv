@@ -21,6 +21,7 @@ import itertools
 import shutil
 import sepconv
 import argparse
+import time
 
 # commands for testing on small dataset
 # python dslf.py --mode small --input my_input --output my_output
@@ -215,7 +216,7 @@ class SepConvNet(torch.nn.Module):
     
 class smallTest:
     '''
-    Used to test on small dataset (5 images)
+    Used to test on small dataset (some images)
     '''
     def __init__(self, input_dir):
         self.myTransform = transforms.Compose([transforms.ToTensor()])
@@ -237,16 +238,10 @@ class smallTest:
         print("start testing, mode: {}".format(mode))
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-
-        if mode == "multiple":
-            for i in range(len(self.firstIms)):
-                frame_out = model.forward(self.firstIms[i], self.secIms[i])
-                imwrite(frame_out, os.path.join(ouput_dir, str(i)+'.png'), range=(0, 1))
-        else:  # test only 1 image
-            frame_out = model(self.firstIms[idx], self.secIms[idx])
-            imwrite(frame_out, os.path.join(ouput_dir, str(idx)+'.png'), range=(0, 1))
+        frame_out = model(self.firstIms[idx], self.secIms[idx])
+        imwrite(frame_out, os.path.join(ouput_dir, str(idx)+'.png'), range=(0, 1))
         print("testing done")
-            
+       
     def getFirstIms(self):
         return self.firstIms
     
@@ -412,15 +407,24 @@ if __name__ == "__main__":
     kernel_size = args.kernel
     distance = args.distance
     
+    a = torch.cuda.memory_allocated()/1000000000
     model = SepConvNet(kernel_size=kernel_size)
+    b = torch.cuda.memory_allocated()/1000000000
+    print(f'CUDA Memory for the Model: {b-a} Gb')
     model.cuda().eval()
     
     if args.mode == 'small':
-        for i in range(5):
-            mytest = smallTest(input_dir)
-            mytest.test(model, output_dir, "one", i)
-            del mytest
-            
+        start = time.time()
+        mytest = smallTest(input_dir)
+        c = torch.cuda.memory_allocated()/1000000000
+        mytest.test(model, output_dir, "one", 0)
+        print(f'Memory used by the object: {c-b} Gb')
+        print('Deleting the object'); del mytest
+        print('Deleting the model'); del model
+        end = time.time()
+        print(f'Time to test 1 image: {end-start} secs')
+        print(f'Memory in used: {torch.cuda.memory_allocated()/1000000000} Gb')
+        
     elif args.mode == 'dslf':
         castleInput = os.path.join(input_dir, 'Castle')
         holidayInput = os.path.join(input_dir, 'Holiday')
