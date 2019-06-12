@@ -14,22 +14,34 @@ This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv.git 
 
 ### Performance
 * Computer Spec:  
+```
 Intel core i7 4.20GHz (8 CPUs), 32Gb Ram.  
 GPU: NVIDIA GeForce GTX 1080, Total memory: 24Gb, Display Memory (VRAM): 8Gb, Shared Memory: 16Gb.  
+```
 * To interpolate 1 image from 2 inputs 1280x720 - 1.19Mb images:  
+```
 Time: ~ 2 seconds.  
 Memory:  0.11 Gb (0.088 Gb for the model which can be reused, 0.022 Gb for the object that contains tensors of the 2 input images and the methods to be called).
+```
 * To interpolate the whole Castle folder with distances 4:  
-Time:  
-Memory:  
+```
+Time:  114 secs  
+Memory: 0.0088 Gb (interpolate only 1 image at a time, then delete from the memory and do the next)  
+```
 * To interpolate the whole Castle folder with distances 8:  
+```
 Time:  
 Memory:  
+```
 * To interpolate the whole Castle folder with distances 16:  
+```
 Time:   
 Memory:  
+```
 * To interpolate the whole Castle folder with distances 32:  
+```
 Time:  
 Memory:  
+```
 
 

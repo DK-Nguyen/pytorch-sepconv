@@ -263,12 +263,6 @@ class bigTest:
         frame_out = model(firstIm, secIm)
         imwrite(frame_out, os.path.join(outputPath), range=(0, 1))
         print("---------- Output: {} ----------".format(outputPath))
-        
-    def getFirstIms(self):
-        return self.firstIm
-    
-    def getSecIms(self):
-        return self.secIm
     
     
 def getFileNames(inputDir, distance, printFileNames=False):
@@ -308,6 +302,7 @@ def getFileNames(inputDir, distance, printFileNames=False):
     '''
     
     numberOfRounds = math.log2(distance)
+    assert distance >= 2 and distance <= 64, "distance must be in the range of [2, 64]"
     assert numberOfRounds % 1 == 0, "distance must be a power of 2 e.g. 2, 4, 8, 16..."
     gtFiles = [] # ground truth files
     for folders, subfolders, files in os.walk(inputDir):
@@ -328,7 +323,7 @@ def getFileNames(inputDir, distance, printFileNames=False):
             fileNames[roundNumber] += (firstIms, secIms, outputIms)
         else:
             # From round 2 onwards, the firstIms list is concatenated from the firstIms & outputIms of the previous round.
-            # Similarly, the secIms list is concatenated from the firstIms & outputIms of the previous round.
+            # Similarly, the secIms list is concatenated from the secIms & outputIms of the previous round.
             firstIms = sorted(fileNames[roundNumber-1][0] + fileNames[roundNumber-1][2])
             secIms = sorted(fileNames[roundNumber-1][1] + fileNames[roundNumber-1][2])
             outputIms = gtFiles[int(distance/(2**roundNumber))::int(distance/(2**(roundNumber-1)))]
@@ -373,30 +368,29 @@ def dslfTest(dslfInput, fileNames, distance, model):
     if not os.path.exists(dslfOutput):
         os.makedirs(dslfOutput)
         
+    # copy the images in the firstIms into the output folder
+    for name in fileNames[1][0]:
+        shutil.copy(os.path.join(dslfInput, name), dslfOutput)
+        
+    # copy the last image of the secIms into the output folder
+    shutil.copy(os.path.join(dslfInput, fileNames[1][1][-1]), dslfOutput)
+    
     # for each round:
-    #     for each image in the firstIms list:
-    #         find the path to the corresponding second image and output image names
-    #         apply the model on the first image and second image, output the image with corresponding name
+    #     if the key is not "final":
+    #         for each image in the firstIms list:
+    #             find the path to the corresponding second image and output image names
+    #             apply the model on the first image and second image, output the image with corresponding name
     for key, value in fileNames.items(): # value is a tuple of lists: (firstIms, secIms, outputIms) for each round
         if key != 'final':
-            print('round: {}, dataset: {}, distance: {}'.format(key,folderName,distance))
+            print(f'round: {key}, dataset: {dslfOutput}, distance: {distance}')
             for idx, name in enumerate(value[0]):
-                firstImPath = os.path.join(dslfInput, name)
-                secImPath = os.path.join(dslfInput, value[1][idx])
-                outputImPath = os.path.join(dslfInput, value[2][idx])
+                print(f'CUDA Memory Usage: {torch.cuda.memory_allocated()/1000000000}')
+                firstImPath = os.path.join(dslfOutput, name)
+                secImPath = os.path.join(dslfOutput, value[1][idx])
+                outputImPath = os.path.join(dslfOutput, value[2][idx])
                 mytest = bigTest()
                 mytest.test(model, firstImPath, secImPath, outputImPath)
-    
-    # move the interpolated files to the output folder
-    for name in fileNames['final']:
-        if 'i' in name:
-            if not os.path.exists(os.path.join(dslfOutput, name)):
-                shutil.move(os.path.join(dslfInput, name), dslfOutput)
-        else:
-            shutil.copy(os.path.join(dslfInput, name), dslfOutput)
-
-
-            
+        
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -430,14 +424,17 @@ if __name__ == "__main__":
         holidayInput = os.path.join(input_dir, 'Holiday')
         sealBallsInput = os.path.join(input_dir, 'Seal&Balls')
         
+        start = time.time()
         castleFileNames = getFileNames(castleInput, distance, printFileNames=True)
         dslfTest(castleInput, castleFileNames, distance, model)
+        end = time.time()
+        print(f'Interpolating Castle with distance {distance} takes {end-start} secs')
         
-        holidayFileNames = getFileNames(holidayInput, distance, printFileNames=True)
-        dslfTest(holidayInput, holidayFileNames, distance, model)
+#         holidayFileNames = getFileNames(holidayInput, distance, printFileNames=True)
+#         dslfTest(holidayInput, holidayFileNames, distance, model)
         
-        sealBallsFileNames = getFileNames(sealBallsInput, distance, printFileNames=True)
-        dslfTest(sealBallsInput, sealBallsFileNames, distance, model)
+#         sealBallsFileNames = getFileNames(sealBallsInput, distance, printFileNames=True)
+#         dslfTest(sealBallsInput, sealBallsFileNames, distance, model)
 
             
     
