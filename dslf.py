@@ -257,12 +257,13 @@ class bigTest:
         self.myTransform = transforms.Compose([transforms.ToTensor()])
         
     def test(self, model, firstImPath, secImPath, outputPath):
-        print("Interpolating between {} and {}".format(firstImPath, secImPath))
-        firstIm = to_variable(self.myTransform(Image.open(firstImPath)).unsqueeze(0))
-        secIm = to_variable(self.myTransform(Image.open(secImPath)).unsqueeze(0))
-        frame_out = model(firstIm, secIm)
-        imwrite(frame_out, os.path.join(outputPath), range=(0, 1))
-        print("---------- Output: {} ----------".format(outputPath))
+        with torch.no_grad():
+            print("Interpolating between {} and {}".format(firstImPath, secImPath))
+            firstIm = to_variable(self.myTransform(Image.open(firstImPath)).unsqueeze(0))
+            secIm = to_variable(self.myTransform(Image.open(secImPath)).unsqueeze(0))
+            frame_out = model(firstIm, secIm)
+            imwrite(frame_out, os.path.join(outputPath), range=(0, 1))
+            print("---------- Output: {} ----------".format(outputPath))
     
     
 def getFileNames(inputDir, distance, printFileNames=False):
@@ -430,11 +431,15 @@ if __name__ == "__main__":
         end = time.time()
         print(f'Interpolating Castle with distance {distance} takes {end-start} secs')
         
+#         start = time.time()
 #         holidayFileNames = getFileNames(holidayInput, distance, printFileNames=True)
 #         dslfTest(holidayInput, holidayFileNames, distance, model)
+#         end = time.time()
+#         print(f'Interpolating Holiday with distance {distance} takes {end-start} secs')
         
+#         start = time.time()
 #         sealBallsFileNames = getFileNames(sealBallsInput, distance, printFileNames=True)
 #         dslfTest(sealBallsInput, sealBallsFileNames, distance, model)
-
-            
+#         end = time.time()
+#         print(f'Interpolating Seal&balls with distance {distance} takes {end-start} secs')
     
