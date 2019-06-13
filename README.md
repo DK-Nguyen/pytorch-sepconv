@@ -21,7 +21,8 @@ GPU: NVIDIA GeForce GTX 1080, Total memory: 24Gb, Display Memory (VRAM): 8Gb, Sh
 * To interpolate 1 image from 2 inputs 1280x720 - 1.19Mb images:  
 ```
 Time: ~ 2 seconds.  
-Memory:  0.11 Gb (0.088 Gb for the model which can be reused, 0.022 Gb for the object that contains tensors of the 2 input images and the methods to be called).
+Memory:  0.11 Gb (0.088 Gb for the model which can be reused,  
+0.022 Gb for the object that contains tensors of the 2 input images and the methods to be called).
 ```
 * To interpolate the whole Castle folder with distances 4:  
 ```
