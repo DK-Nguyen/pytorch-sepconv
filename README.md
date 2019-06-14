@@ -20,7 +20,8 @@ GPU: NVIDIA GeForce GTX 1080, Total memory: 24Gb, Display Memory (VRAM): 8Gb, Sh
 ```
 
 * Method: interpolating 1 image at a time
-** To interpolate 1 image from 2 inputs 1280x720 - 1.19Mb images:  
+```
+To interpolate 1 image from 2 inputs 1280x720 - 1.19Mb images:  
 Time: ~ 2 seconds.  
 Memory:  ~ 2.5 Gb of GPU.
 * To interpolate the whole Castle folder with distances 4:  
@@ -38,4 +39,4 @@ Min PSNR: 32.34; Mean PSNR: 37.42
 * To interpolate the whole Castle folder with distances 64:  
 Time: 149 secs
 Min PSNR: 27.87; Mean PSNR: 33.3
-
+```
