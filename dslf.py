@@ -38,6 +38,7 @@ parser.add_argument('--output', type=str, default='DSLF')
 parser.add_argument('--model', type=str, default='lf')
 parser.add_argument('--kernel', type=int, default=51)
 parser.add_argument('--distance', type=int, default=4)
+parser.add_argument('--batch_size', type=int, default=1)
 
 # castleInput = os.path.join(os.getcwd(), 'DSLF', 'Castle')
 # holidayInput = os.path.join(os.getcwd(), 'DSLF', 'Holiday')
@@ -46,7 +47,7 @@ parser.add_argument('--distance', type=int, default=4)
 def to_variable(x):
     if torch.cuda.is_available():
         x = x.cuda()
-    return Variable(x) 
+    return x
 
 
 class KernelEstimation(torch.nn.Module):
@@ -160,9 +161,10 @@ class KernelEstimation(torch.nn.Module):
         Vertical2 = self.moduleVertical2(tensorCombine)
         Horizontal1 = self.moduleHorizontal1(tensorCombine)
         Horizontal2 = self.moduleHorizontal2(tensorCombine)
-
+        
+        print(f'CUDA Memory Usage in Kernel Estimation: {torch.cuda.memory_allocated()/1000000000} Gb')
         return Vertical1, Horizontal1, Vertical2, Horizontal2
-
+        
 
 class SepConvNet(torch.nn.Module):
     def __init__(self, kernel_size):
@@ -200,70 +202,19 @@ class SepConvNet(torch.nn.Module):
             w_padded = True
 
         Vertical1, Horizontal1, Vertical2, Horizontal2 = self.get_kernel(frame0, frame2)
-
         tensorDot1 = sepconv.FunctionSepconv()(self.modulePad(frame0), Vertical1, Horizontal1)
         tensorDot2 = sepconv.FunctionSepconv()(self.modulePad(frame2), Vertical2, Horizontal2)
-
         frame1 = tensorDot1 + tensorDot2
 
+        
         if h_padded:
             frame1 = frame1[:, :, 0:h0, :]
         if w_padded:
             frame1 = frame1[:, :, :, 0:w0]
-
+        
+        print(f'CUDA Memory Usage in SepConvNet: {torch.cuda.memory_allocated()/1000000000} Gb')
+        
         return frame1
-
-    
-class smallTest:
-    '''
-    Used to test on small dataset (some images)
-    '''
-    def __init__(self, input_dir):
-        self.myTransform = transforms.Compose([transforms.ToTensor()])
-        self.firstIms = []
-        self.secIms = []
-        
-        for folder, subfolders, files in os.walk(input_dir):
-            for file in sorted(files):
-                filePath = os.path.join(os.path.abspath(folder), file)
-                if ".ipynb_checkpoints" in filePath:
-                    continue
-#                 print(filePath)
-                if file == "first.png":
-                    self.firstIms.append(to_variable(self.myTransform(Image.open(filePath)).unsqueeze(0)))
-                if file == "second.png":
-                    self.secIms.append(to_variable(self.myTransform(Image.open(filePath)).unsqueeze(0)))
-        
-    def test(self, model, ouput_dir, mode="one", idx=0):
-        print("start testing, mode: {}".format(mode))
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        frame_out = model(self.firstIms[idx], self.secIms[idx])
-        imwrite(frame_out, os.path.join(ouput_dir, str(idx)+'.png'), range=(0, 1))
-        print("testing done")
-       
-    def getFirstIms(self):
-        return self.firstIms
-    
-    def getSecIms(self):
-        return self.secIms
-
-    
-class bigTest:
-    '''
-    Only used to test on one image at a time, doing this way we can save memory
-    '''
-    def __init__(self):
-        self.myTransform = transforms.Compose([transforms.ToTensor()])
-        
-    def test(self, model, firstImPath, secImPath, outputPath):
-        with torch.no_grad():
-            print("Interpolating between {} and {}".format(firstImPath, secImPath))
-            firstIm = to_variable(self.myTransform(Image.open(firstImPath)).unsqueeze(0))
-            secIm = to_variable(self.myTransform(Image.open(secImPath)).unsqueeze(0))
-            frame_out = model(firstIm, secIm)
-            imwrite(frame_out, os.path.join(outputPath), range=(0, 1))
-            print("---------- Output: {} ----------".format(outputPath))
     
     
 def getFileNames(inputDir, distance, printFileNames=False):
@@ -357,10 +308,61 @@ def getFileNames(inputDir, distance, printFileNames=False):
                 
     return fileNames    
 
+class smallTest:
+    '''
+    Used to test on small dataset (some images) when --mode is 'small'
+    '''
+    def __init__(self, input_dir):
+        self.myTransform = transforms.Compose([transforms.ToTensor()])
+        self.firstIms = []
+        self.secIms = []
+        
+        for folder, subfolders, files in os.walk(input_dir):
+            for file in sorted(files):
+                filePath = os.path.join(os.path.abspath(folder), file)
+                if ".ipynb_checkpoints" in filePath:
+                    continue
+#                 print(filePath)
+                if file == "first.png":
+                    self.firstIms.append(to_variable(self.myTransform(Image.open(filePath)).unsqueeze(0)))
+                if file == "second.png":
+                    self.secIms.append(to_variable(self.myTransform(Image.open(filePath)).unsqueeze(0)))
+        
+    def test(self, model, ouput_dir, mode="one", idx=0):
+        print("start testing, mode: {}".format(mode))
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        frame_out = model(self.firstIms[idx], self.secIms[idx])
+        imwrite(frame_out, os.path.join(ouput_dir, str(idx)+'.png'), range=(0, 1))
+        print("testing done")
+       
+    def getFirstIms(self):
+        return self.firstIms
+    
+    def getSecIms(self):
+        return self.secIms
+
+    
+class OneImTest:
+    '''
+    Only used to test on one image at a time, doing this way we can save memory
+    Used in the dslfTest function
+    '''
+    def __init__(self, firstImPath, secImPath):
+        self.transform = transforms.Compose([transforms.ToTensor()])
+        self.firstIm = to_variable(self.transform(Image.open(firstImPath)).unsqueeze(0))
+        self.secIm = to_variable(self.transform(Image.open(secImPath)).unsqueeze(0))
+        
+    def test(self, model, outputPath):
+        with torch.no_grad():
+            frame_out = model(self.firstIm, self.secIm)
+            imwrite(frame_out, os.path.join(outputPath), range=(0, 1))
+            print("---------- Output: {} ----------".format(outputPath))
+
 
 def dslfTest(dslfInput, fileNames, distance, model):
     '''
-    run the model on the DSLF dataset
+    run the model on the DSLF dataset - used when --mode is 'dslf'
     '''
     folderName = os.path.basename(os.path.normpath(dslfInput)) # get the name of the folder (Castle/Holiday/Seal&Balls)
     dslfOutputName = folderName + 'Interpolated' + str(distance) + args.model
@@ -384,15 +386,88 @@ def dslfTest(dslfInput, fileNames, distance, model):
     for key, value in fileNames.items(): # value is a tuple of lists: (firstIms, secIms, outputIms) for each round
         if key != 'final':
             print(f'round: {key}, dataset: {dslfOutput}, distance: {distance}')
+            
             for idx, name in enumerate(value[0]):
-                print(f'CUDA Memory Usage: {torch.cuda.memory_allocated()/1000000000}')
+                start1image = time.time()
                 firstImPath = os.path.join(dslfOutput, name)
                 secImPath = os.path.join(dslfOutput, value[1][idx])
                 outputImPath = os.path.join(dslfOutput, value[2][idx])
-                mytest = bigTest()
-                mytest.test(model, firstImPath, secImPath, outputImPath)
+                a = time.time()
+                mytest = OneImTest(firstImPath, secImPath)
+                b = time.time()
+                mytest.test(model, outputImPath)
+                c = time.time()
+                print(f'Time to load the first and second image: {b-a}')
+                print(f'Time to interpolate and write the image: {c-b}')
+                print(f'Total time for interpolating 1 image: {time.time() - start1image}')
+    
+class DslfDataset2(Dataset):
+    '''
+    Try to apply the Dataset class from torch to do the interpolation to see if the performance is improved
+    '''
+    def __init__(self, input_dir, firstImsList, secImsList):
+        self.transform = transforms.Compose([transforms.ToTensor()])
+        self.input_dir = input_dir
+        self.firstImsList = firstImsList
+        self.secImsList = secImsList
         
+    def __getitem__(self, index):
+        firstFrame = to_variable(self.transform(Image.open(os.path.join(self.input_dir, self.firstImsList[index]))))
+        secFrame = to_variable(self.transform(Image.open(os.path.join(self.input_dir, self.secImsList[index]))))
+        return firstFrame, secFrame
 
+    def __len__(self):
+        return len(self.firstImsList)
+        
+        
+def dslfTest2(dslfInput, fileNames, distance):
+    folderName = os.path.basename(os.path.normpath(dslfInput)) # get the name of the folder (Castle/Holiday/Seal&Balls)
+    dslfOutputName = folderName + 'Interpolated' + str(distance) + args.model
+    dslfOutputPath = os.path.join(os.getcwd(), 'DSLF', dslfOutputName)
+    # make the output folder
+    if not os.path.exists(dslfOutputPath):
+        os.makedirs(dslfOutputPath)
+        
+    # copy the images in the firstIms into the output folder (the images that we need to interpolate other images)
+    for name in fileNames[1][0]:
+        shutil.copy(os.path.join(dslfInput, name), dslfOutputPath)
+        
+    # the firstIms list does not contain the last image,
+    # so we need to also copy the last image of the secIms into the output folder
+    shutil.copy(os.path.join(dslfInput, fileNames[1][1][-1]), dslfOutputPath)
+    
+    model = SepConvNet(kernel_size=kernel_size).to('cuda')
+    model.eval()
+    start = time.time()
+    
+    # for each round:
+    #     if the key is not "final":
+    #         for each image in the firstIms list:
+    #             find the path to the corresponding second image and output image names
+    #             apply the model on the first image and second image, output the image with corresponding name
+    for key, value in fileNames.items(): # value is a tuple of lists: (firstIms, secIms, outputIms) for each round
+        testset = DslfDataset2(dslfOutputPath, value[0], value[1])
+        testloader = DataLoader(testset, batch_size=1, shuffle=False)
+        print(f'Memory in used: {torch.cuda.memory_allocated()/1000000000} Gb')
+        if key != 'final':
+            print(f'round: {key}, dataset: {dslfOutputPath}, distance: {distance}')
+            counter = 0
+            with torch.no_grad():
+                for batch, (firstIm, secIm) in enumerate(testloader):
+#                     print("Interpolating between {} and {}".format(firstIm, secIm))
+                    frame_out = model(firstIm, secIm)
+    
+                    for i in range(frame_out.shape[0]):
+                        outputImPath = os.path.join(dslfOutputPath, value[2][counter])
+                        imwrite(frame_out[i:], outputImPath, range=(0, 1))
+                        counter += 1
+                        print("---------- Output: {} ----------".format(outputImPath))
+                        
+    end = time.time()
+    print(f'Time for Interpolating: {end-start}')
+        
+        
+        
 if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
@@ -401,12 +476,12 @@ if __name__ == "__main__":
     modelPath = os.path.join(os.getcwd(), 'network-' + args.model + '.pytorch')
     kernel_size = args.kernel
     distance = args.distance
+
     
     a = torch.cuda.memory_allocated()/1000000000
-    model = SepConvNet(kernel_size=kernel_size)
+    model = SepConvNet(kernel_size=kernel_size).cuda().eval()
     b = torch.cuda.memory_allocated()/1000000000
     print(f'CUDA Memory for the Model: {b-a} Gb')
-    model.cuda().eval()
     
     if args.mode == 'small':
         start = time.time()
@@ -426,10 +501,10 @@ if __name__ == "__main__":
         sealBallsInput = os.path.join(input_dir, 'Seal&Balls')
         
         start = time.time()
-        castleFileNames = getFileNames(castleInput, distance, printFileNames=True)
+        castleFileNames = getFileNames(castleInput, distance, printFileNames=False)
         dslfTest(castleInput, castleFileNames, distance, model)
         end = time.time()
-        print(f'Interpolating Castle with distance {distance} takes {end-start} secs')
+        print(f'Total time for interpolating Castle with distance {distance}: {end-start} secs')
         
 #         start = time.time()
 #         holidayFileNames = getFileNames(holidayInput, distance, printFileNames=True)
@@ -442,4 +517,13 @@ if __name__ == "__main__":
 #         dslfTest(sealBallsInput, sealBallsFileNames, distance, model)
 #         end = time.time()
 #         print(f'Interpolating Seal&balls with distance {distance} takes {end-start} secs')
-    
+
+
+
+    # test dslfTest2 using the Dataset from torch to see if the performance is improved
+#     castleInput = os.path.join(input_dir, 'Castle')
+#     castleFileNames = getFileNames(castleInput, distance, printFileNames=True)
+#     dslfTest2(castleInput, castleFileNames, distance)
+
+
+
