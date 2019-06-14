@@ -18,10 +18,10 @@ This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv.git 
 Intel core i7 4.20GHz (8 CPUs), 32Gb Ram.  
 GPU: NVIDIA GeForce GTX 1080, Total memory: 24Gb, Display Memory (VRAM): 8Gb, Shared Memory: 16Gb.  
 ```
-Performance
-```
-___Method: interpolating 1 image at a time___
-> To interpolate 1 image from 2 inputs 1280x720 - 1.19Mb images:  
+
+* Method: interpolating 1 image at a time
+````
+* To interpolate 1 image from 2 inputs 1280x720 - 1.19Mb images:  
 Time: ~ 2 seconds.  
 Memory:  ~ 2.5 Gb of GPU.
 * To interpolate the whole Castle folder with distances 4:  
