@@ -22,8 +22,8 @@ GPU: NVIDIA GeForce GTX 1080, Total memory: 24Gb, Display Memory (VRAM): 8Gb, Sh
 * Method: interpolating 1 image at a time
 ```
 * To interpolate 1 image from 2 inputs 1280x720 - 1.19Mb images:  
-Time to load the 2 images into CUDA Tensors: 0.09 secs.
-Time to interpolate and write the image: 0.68 secs
+Time to read and load the 2 input images into CUDA Tensors: 0.09 secs.
+Time to interpolate and write the interpolated image to disk: 0.68 secs.
 Total Time for 1 image: ~ 0.77 seconds.  
 Memory:  ~ 2.5 Gb of GPU.
 * To interpolate the whole Castle folder with distances 4:  
