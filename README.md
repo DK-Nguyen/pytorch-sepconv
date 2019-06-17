@@ -21,7 +21,7 @@ GPU: NVIDIA GeForce GTX 1080, Total memory: 24Gb, Display Memory (VRAM): 8Gb, Sh
 
 * Method: interpolating 1 image at a time
 ```
-* To interpolate 1 image from 2 inputs 1280x720 - 1.19Mb images:  
+* To interpolate 1 image from 2 inputs images (1280x720 - 1.19Mb each) :  
 Time to read and load the 2 input images into CUDA Tensors: 0.09 secs.
 Time to interpolate and write the interpolated image to disk: 0.68 secs.
 Total Time for 1 image: ~ 0.77 seconds.  
