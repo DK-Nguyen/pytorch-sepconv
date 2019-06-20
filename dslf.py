@@ -323,10 +323,10 @@ class smallTest:
                 if ".ipynb_checkpoints" in filePath:
                     continue
 #                 print(filePath)
-                if file == "first.png":
-                    self.firstIms.append(to_variable(self.myTransform(Image.open(filePath)).unsqueeze(0)))
-                if file == "second.png":
-                    self.secIms.append(to_variable(self.myTransform(Image.open(filePath)).unsqueeze(0)))
+                if file == "first.bmp":
+                    self.firstIms.append(to_variable(self.myTransform(Image.open(filePath)).repeat(3, 1, 1).unsqueeze(0)))
+                if file == "sec.bmp":
+                    self.secIms.append(to_variable(self.myTransform(Image.open(filePath)).repeat(3, 1, 1).unsqueeze(0)))
         
     def test(self, model, ouput_dir, mode="one", idx=0):
         print("start testing, mode: {}".format(mode))
