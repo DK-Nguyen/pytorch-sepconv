@@ -333,7 +333,7 @@ class smallTest:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         frame_out = model(self.firstIms[idx], self.secIms[idx])
-        imwrite(frame_out, os.path.join(ouput_dir, str(idx)+'.png'), range=(0, 1))
+        imwrite(frame_out, os.path.join(ouput_dir, str(idx)+'.bmp'), range=(0, 1))
         print("testing done")
        
     def getFirstIms(self):
