@@ -116,7 +116,7 @@ class KernelEstimation(torch.nn.Module):
         self.moduleHorizontal1 = Subnet(self.kernel_size)
         self.moduleHorizontal2 = Subnet(self.kernel_size)
 
-        # use this line only when testing on pretrained model. Comment it out when training
+        # use this line only when using the pretrained model to do inference. Comment it out when training
         self.load_state_dict(torch.load(modelPath))
 
     def forward(self, rfield0, rfield2):
