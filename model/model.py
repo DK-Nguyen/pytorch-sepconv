@@ -7,6 +7,7 @@ import sys
 from torch.nn import functional as F
 from pathlib import Path
 
+
 def to_variable(x):
     if torch.cuda.is_available():
         x = x.cuda()
