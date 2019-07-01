@@ -6,6 +6,11 @@ import torch
 from pathlib import Path
 from collections import OrderedDict
 
+weight_folder = Path(__file__).parent.parent/'weights'/'sepconv_weights'
+full_weight = (weight_folder/'network-lf.pytorch').resolve()
+feature_weight = Path(weight_folder/'features-lf.pytorch')
+kernel_weight = Path(weight_folder/'kernels-lf.pytorch')
+
 
 def splitting_weights(full_weight_path, feature_weight_path, kernel_weight_path):
     full_weights = torch.load(full_weight_path)
@@ -36,9 +41,5 @@ def splitting_weights(full_weight_path, feature_weight_path, kernel_weight_path)
 
 
 if __name__ == '__main__':
-    weight_folder = Path(__file__).parent.parent/'weights'/'sepconv_weights'
-    full_weight = (weight_folder/'network-lf.pytorch').resolve()
-    feature_weight = Path(weight_folder/'features-lf.pytorch')
-    kernel_weight = Path(weight_folder/'kernels-lf.pytorch')
     splitting_weights(full_weight, feature_weight, kernel_weight)
 

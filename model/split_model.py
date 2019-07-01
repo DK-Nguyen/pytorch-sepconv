@@ -1,14 +1,13 @@
 import torch
+import torch.nn as nn
 import torch.optim as optim
 from torch.nn import functional as F
-import math
-import sys
+import layers.sepconv
+from layers import features
 
-def to_variable(x):
+
+def to_cuda(x):
     if torch.cuda.is_available():
         x = x.cuda()
     return x
 
-class KernelEstimation(torch.nn.Module):
-    def __init__(self, kernel_size):
-       pass

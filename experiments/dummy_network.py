@@ -7,9 +7,10 @@ from collections import OrderedDict
 
 # parameters
 epochs = 5
-model_path = Path('dummy_model.pth')
-features_weight_path = Path('features.pth')
-classifier_weight_path = Path('classifier.pth')
+weight_folder = Path(__file__).parent.parent / 'weights' / 'dummy_weights'
+model_path = Path(weight_folder/'dummy_model.pth')
+features_weight_path = Path(weight_folder/'features.pth')
+classifier_weight_path = Path(weight_folder/'classifier.pth')
 
 
 class DummyDataset(Dataset):
@@ -61,20 +62,35 @@ class DummyModel(nn.Module):
 class SplitModel(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(SplitModel, self).__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(in_channels, 6, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(6, 3, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2)
-        )
-        self.classifier = nn.Sequential(
-            nn.Linear(16*16*3, 128, bias=True),
-            nn.Linear(128, 10),
-            nn.Linear(10, out_channels),
-            nn.Sigmoid()
-        )
+        # self.features = nn.Sequential(
+        #     nn.Conv2d(in_channels, 6, kernel_size=3, padding=1),
+        #     nn.ReLU(inplace=True),
+        #     nn.MaxPool2d(kernel_size=2, stride=2),
+        #     nn.Conv2d(6, 3, kernel_size=3, padding=1),
+        #     nn.ReLU(inplace=True),
+        #     nn.MaxPool2d(kernel_size=2, stride=2)
+        # )
+
+        # self.classifier = nn.Sequential(
+        #     nn.Linear(16*16*3, 128, bias=True),
+        #     nn.Linear(128, 10),
+        #     nn.Linear(10, out_channels),
+        #     nn.Sigmoid()
+        # )
+
+        self.features = nn.Sequential()
+        self.features.add_module('conv1', nn.Conv2d(in_channels, 6, kernel_size=3, padding=1))
+        self.features.add_module('relu1', nn.ReLU(inplace=True))
+        self.features.add_module('maxPool1', nn.MaxPool2d(kernel_size=2, stride=2))
+        self.features.add_module('conv2', nn.Conv2d(6, 3, kernel_size=3, padding=1))
+        self.features.add_module('relu2', nn.ReLU(inplace=True))
+        self.features.add_module('maxPool2', nn.MaxPool2d(kernel_size=2, stride=2))
+
+        self.classifier = nn.Sequential()
+        self.classifier.add_module('linear1', nn.Linear(16*16*3, 128, bias=True))
+        self.classifier.add_module('linear2', nn.Linear(128, 10))
+        self.classifier.add_module('linear3', nn.Linear(10, out_channels))
+        self.classifier.add_module('last_layer', nn.Sigmoid())
 
     def forward(self, x):
         x = self.features(x)
@@ -121,18 +137,33 @@ def splitting_weight(weight_path):
     torch.save(classifier_weights, classifier_weight_path)
 
 
-def main():
+def load_split_model():
+    model = SplitModel(in_channels=3, out_channels=1)
+    model.features.load_state_dict(torch.load(features_weight_path))
+    model.classifier.load_state_dict(torch.load(classifier_weight_path))
+    print(model.features)
+    print(model.classifier)
+    # freeze the parameters in the features part
+    for param in model.features.parameters():
+        param.requires_grad = False
+
+
+def train_un_split_model():
+    # load the dataset, the dataloader, the un-split model
+    # train that model, save the weights
     dummy_dataset = DummyDataset()
     dummy_loader = DataLoader(dummy_dataset, batch_size=1)
-    # model = DummyModel(in_channels=3, out_channels=1)
-    model = SplitModel(in_channels=3, out_channels=1)
+    model = DummyModel(in_channels=3, out_channels=1)
     criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.003)
     train_network(model, optimizer, criterion, dummy_loader)
-    # save_model(model)
+    save_model(model)
 
 
 if __name__ == "__main__":
-    # main()
-    splitting_weight(model_path)
-
+    # train_un_split_model()
+    # splitting_weight(model_path)
+    load_split_model()
+    # for idx, value in torch.load(classifier_weight_path).items():
+        # print(idx)
+    # model = SplitModel()
