@@ -1,17 +1,22 @@
 """
 This Module is used to test if the functions and classes in the project work as expected
 """
-
+import numpy as np
 import torch
+from torch.utils.data import DataLoader
 from torchvision import transforms
-from model.layers.features_extraction import FeaturesExtraction
-from model.layers.subnet_kernel import SubnetKernels
-from model.split_model import SepConvNet
-from utils.helpers import get_file_names, to_cuda
 import time
 from pathlib import Path
 import PIL.Image as Image
 import cv2
+import matplotlib.pyplot as plt
+
+from model.layers.features_extraction import FeaturesExtraction
+from model.layers.subnet_kernel import SubnetKernels
+from model.split_model import SepConvNet
+from utils.helpers import get_file_names, to_cuda
+from utils.data_handler import InterpolationDataset
+
 
 project_path = Path(__file__).parent.parent
 # weights path
@@ -19,12 +24,18 @@ features_weight_path = Path(project_path/'weights'/'sepconv_weights/features-lf.
 kernels_weight_path = Path(project_path/'weights'/'sepconv_weights/kernels-lf.pytorch')
 dslf_dataset_path = Path(project_path/'data'/'dslf_dataset')
 # dataset path
-castle_dataset_path = Path(project_path/'data'/'dslf_dataset'/'Castle')
-holiday_dataset_path = Path(project_path/'data'/'dslf_dataset'/'Holiday')
-seal_dataset_path = Path(project_path/'data'/'dslf_dataset'/'Seal&Balls')
+castle_dataset_path = Path(project_path/'data'/'dslf'/'dslf')
+holiday_dataset_path = Path(project_path/'data'/'dslf'/'dslf2')
+seal_dataset_path = Path(project_path/'data'/'dslf'/'dslf4')
+train_dataset_path = Path(project_path/'data'/'dslf'/'train')
+val_dataset_path = Path(project_path/'data'/'dslf'/'val')
 
 
 def reading_weights_check(features_path, kernels_path):
+    """
+    :param features_path: path to the features_extration weights
+    :param kernels_path: path to the subnet_kernels weights
+    """
     features_weight = torch.load(features_path)
     kernels_weight = torch.load(kernels_path)
     print(f"----Length of features weight: {len(list(features_weight))}")
@@ -41,6 +52,10 @@ def reading_weights_check(features_path, kernels_path):
 
 
 def features_extraction_check():
+    """
+    After split the model and the pre-trained weights into features extraction and subnet kernels parts,
+    use this function to test the features_extraction part
+    """
     device = torch.device('cuda')
     start1 = time.time()
     feature_extraction = FeaturesExtraction().to(device)
@@ -55,7 +70,7 @@ def features_extraction_check():
 
     print('--- Testing the features extraction part ---')
     start2 = time.time()
-    # frame0 = to_cuda(torch.randn(1, 3, 1920, 1216))
+    # frame0 = to_cuda(torch.randn(1, 3, 1920, 1216))  # needs more than 8GB of GPU to run this
     # frame2 = to_cuda(torch.randn(1, 3, 1920, 1216))
     frame0 = to_cuda(torch.randn(1, 3, 1280, 736))
     frame2 = to_cuda(torch.randn(1, 3, 1280, 736))
@@ -72,6 +87,9 @@ def features_extraction_check():
 
 
 def subnet_kernel_check():
+    """
+    Test the subnet_kernel part of the split network
+    """
     device = torch.device('cuda')
     start1 = time.time()
     subnet_kernel = SubnetKernels(subnet_kernel_size=51).to(device)
@@ -99,6 +117,9 @@ def subnet_kernel_check():
 
 
 def model_check():
+    """
+    Check the whole model
+    """
     device = torch.device('cuda')
     start1 = time.time()
     model = SepConvNet(subnet_kernel_size=51).to(device)
@@ -125,6 +146,9 @@ def model_check():
 
 
 def pil_vs_cv2():
+    """
+    Test the performance of PIL and CV2 in reading images
+    """
     transform = transforms.Compose([
         transforms.ToTensor()
     ])
@@ -155,10 +179,20 @@ def pil_vs_cv2():
     print(f'Time for OpenCV to read and transform 193 images into tensors: {end_cv_all - end_cv3 :.2f}s')
 
 
+def data_handler_check():
+    train_dataset = InterpolationDataset(train_dataset_path)
+    train_loader = DataLoader(train_dataset, batch_size=10)
+
+    for first_frame, gt_frame, sec_frame in train_loader:
+        print(first_frame.shape)
+    print('Passed data_handler_check')
+
+
 if __name__ == '__main__':
     # reading_weights_check(features_weight_path, kernels_weight_path)
     # features_extraction_check()
     # subnet_kernel_check()
     # model_check()
     # pil_vs_cv2()
-    get_file_names(castle_dataset_path, 4, print_file_names=True)
+    # get_file_names(castle_dataset_path, 4, print_file_names=True)
+    data_handler_check()
