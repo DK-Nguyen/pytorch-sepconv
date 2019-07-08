@@ -186,6 +186,7 @@ class SepConvNet(torch.nn.Module):
     def increase_epoch(self):
         self.epoch += 1
 
+
 if __name__ == "__main__":
     model_path = Path("pretrained_weights/network-lf.pytorch")
     model = KernelEstimation(kernel_size=51)

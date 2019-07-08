@@ -1,15 +1,6 @@
 import torch
-import torch.optim as optim
 from torch.nn import functional as F
 import torch.nn as nn
-import math
-import sys
-
-
-def to_cuda(x):
-    if torch.cuda.is_available():
-        x = x.cuda()
-    return x
 
 
 def basic_block(input_channels, output_channels):
@@ -30,48 +21,73 @@ def upsampling_block(channels):
         nn.ReLU(inplace=False)
     )
 
-# TODO: make the features extraction part of the network with the names matches the names in model.KernelEstimation
 
+class FeaturesExtraction(nn.Module):
 
-if __name__ == "__main__":
-    frame0 = torch.randn((1, 3, 1280, 800))
-    frame2 = torch.randn((1, 3, 1280, 800))
-    x = to_cuda(torch.cat([frame0, frame2], 1))
-    print(x.shape)
+    def __init__(self):
+        super(FeaturesExtraction, self).__init__()
+        self.moduleConv1 = basic_block(6, 32)
 
-    basic1 = to_cuda(basic_block(6, 32))
-    x = basic1(x)
-    print('after basic 1, x has shape: ', x.shape)
+        self.modulePool1 = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.moduleConv2 = basic_block(32, 64)
 
-    x = nn.AvgPool2d(kernel_size=2, stride=2)(x)
-    basic2 = to_cuda(basic_block(32, 64))
-    x = basic2(x)
-    print('after basic 2, x has shape: ', x.shape)
+        self.modulePool2 = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.moduleConv3 = basic_block(64, 128)
 
-    x = nn.AvgPool2d(kernel_size=2, stride=2)(x)
-    basic3 = to_cuda(basic_block(64, 128))
-    x = basic3(x)
-    print('after basic 3, x has shape: ', x.shape)
+        self.modulePool3 = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.moduleConv4 = basic_block(128, 256)
 
-    x = nn.AvgPool2d(kernel_size=2, stride=2)(x)
-    basic4 = to_cuda(basic_block(128, 256))
-    x = basic4(x)
-    print('after basic 4, x has shape: ', x.shape)
+        self.modulePool4 = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.moduleConv5 = basic_block(256, 512)
 
-    x = nn.AvgPool2d(kernel_size=2, stride=2)(x)
-    basic5 = to_cuda(basic_block(256, 512))
-    x = basic5(x)
-    print('after basic 5, x has shape: ', x.shape)
+        self.modulePool5 = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.moduleDeconv5 = basic_block(512, 512)
 
-    x = nn.AvgPool2d(kernel_size=2, stride=2)(x)
-    basic6 = to_cuda(basic_block(512, 512))
-    x = basic6(x)
-    print('after basic 6, x has shape: ', x.shape)
+        self.moduleUpsample5 = upsampling_block(512)
+        self.moduleDeconv4 = basic_block(512, 256)
 
-    x = to_cuda(upsampling_block(512))(x)
-    basic7 = to_cuda(basic_block(512, 256))
-    x = basic7(x)
-    print('after first upsampling, x has shape: ', x.shape)
+        self.moduleUpsample4 = upsampling_block(256)
+        self.moduleDeconv3 = basic_block(256, 128)
 
-    x = to_cuda(upsampling_block(256))
-    basic8 = to_cuda(basic_block(256, 128))
+        self.moduleUpsample3 = upsampling_block(128)
+        self.moduleDeconv2 = basic_block(128, 64)
+
+        self.moduleUpsample2 = upsampling_block(64)
+
+    def forward(self, rfield0, rfield2):
+        tensorJoin = torch.cat([rfield0, rfield2], 1)
+
+        tensorConv1 = self.moduleConv1(tensorJoin)
+
+        tensorPool1 = self.modulePool1(tensorConv1)
+        tensorConv2 = self.moduleConv2(tensorPool1)
+
+        tensorPool2 = self.modulePool2(tensorConv2)
+        tensorConv3 = self.moduleConv3(tensorPool2)
+
+        tensorPool3 = self.modulePool3(tensorConv3)
+        tensorConv4 = self.moduleConv4(tensorPool3)
+
+        tensorPool4 = self.modulePool4(tensorConv4)
+        tensorConv5 = self.moduleConv5(tensorPool4)
+
+        tensorPool5 = self.modulePool5(tensorConv5)
+        tensorDeconv5 = self.moduleDeconv5(tensorPool5)
+
+        tensorUpsample5 = self.moduleUpsample5(tensorDeconv5)
+        tensorCombine = tensorUpsample5 + tensorConv5
+        tensorDeconv4 = self.moduleDeconv4(tensorCombine)
+
+        tensorUpsample4 = self.moduleUpsample4(tensorDeconv4)
+        tensorCombine = tensorUpsample4 + tensorConv4
+        tensorDeconv3 = self.moduleDeconv3(tensorCombine)
+
+        tensorUpsample3 = self.moduleUpsample3(tensorDeconv3)
+        tensorCombine = tensorUpsample3 + tensorConv3
+        tensorDeconv2 = self.moduleDeconv2(tensorCombine)
+
+        tensorUpsample2 = self.moduleUpsample2(tensorDeconv2)
+        tensorCombine = tensorUpsample2 + tensorConv2
+
+        return tensorCombine
+

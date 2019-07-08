@@ -5,6 +5,12 @@ import torch.optim as optim
 from pathlib import Path
 from collections import OrderedDict
 
+"""
+This Module is used to make a dummy network and test things on it (training, saving models,
+splitting models, testing...)
+"""
+
+
 # parameters
 epochs = 5
 weight_folder = Path(__file__).parent.parent / 'weights' / 'dummy_weights'
