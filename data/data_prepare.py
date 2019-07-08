@@ -2,7 +2,11 @@ from pathlib import Path
 import os
 import shutil
 
-data_path = Path(Path.cwd() / 'dslf4')
+data_path = Path(Path.cwd() / 'dslf')
+# data_path2 = Path(Path.cwd() / 'dslf2')
+# data_path3 = Path(Path.cwd() / 'dslf3')
+# data_path4 = Path(Path.cwd() / 'dslf4')
+
 train_path = Path(Path.cwd() / 'train')
 val_path = Path(Path.cwd() / 'val')
 train_gt_path = Path(Path.cwd() / 'train' / 'gt')
@@ -40,6 +44,7 @@ def data_prepare(folder):
     input_names = []
     gt_names = []
 
+    # get the files name of corresponding pairs (2 inputs and 1 output)
     counter = 0
     for filename in file_names:
         if counter == len(file_names) - distance:
@@ -53,9 +58,10 @@ def data_prepare(folder):
         gt_names.append(gt_frame)
         counter += 1
 
-    # for i, v in enumerate(input_names):
-    #     print(v, gt_names[i])
+    for i, v in enumerate(input_names):
+        print(v, gt_names[i])
 
+    # split the names into train and val lists
     train_input = [f for f in input_names[:int(len(input_names)*train_val_ratio)]]
     train_gt = [f for f in gt_names[:int(len(gt_names)*train_val_ratio)]]
     val_input = [f for f in input_names[int(len(input_names)*train_val_ratio):]]
@@ -66,17 +72,20 @@ def data_prepare(folder):
     # copy & rename the files for the train folder
     for idx, value in enumerate(sorted(train_input)):
         print(value, train_gt[idx])
-        name, extension = value[0].split('.')
-        first_frame_path = folder / value[0]
-        sec_frame_path = folder / value[1]
-        gt_frame_path = folder / train_gt[idx]
+        first_frame_name, extension = value[0].split('.')
+        gt_name = train_gt[idx].split('.')[0]
+        input_frames_path = Path(train_input_path/gt_name)
+        if not input_frames_path.exists():
+            input_frames_path.mkdir()
 
-        new_first_frame_name = str(name) + '-first.' + extension
-        new_sec_frame_name = str(name) + '-sec.' + extension
-        new_first_frame_path = train_input_path / new_first_frame_name
-        new_sec_frame_path = train_input_path / new_sec_frame_name
-        new_gt_name = str(name) + '-gt.' + extension
-        new_gt_path = train_gt_path / new_gt_name
+        first_frame_path = Path(folder/value[0])
+        sec_frame_path = Path(folder/value[1])
+        gt_frame_path = Path(folder/train_gt[idx])
+
+        new_first_frame_path = Path(input_frames_path / ('first.' + extension))
+        new_sec_frame_path = Path(input_frames_path / ('sec.' + extension))
+        new_gt_path = Path(train_gt_path / train_gt[idx])
+
         shutil.copyfile(first_frame_path, new_first_frame_path)
         shutil.copyfile(sec_frame_path, new_sec_frame_path)
         shutil.copyfile(gt_frame_path, new_gt_path)
@@ -84,19 +93,22 @@ def data_prepare(folder):
     print('-------------------------------')
 
     # copy & rename the files for the val folder
-    for idx, value in enumerate(val_input):
+    for idx, value in enumerate(sorted(val_input)):
         print(value, val_gt[idx])
-        name, extension = value[0].split('.')
-        first_frame_path = folder / value[0]
-        sec_frame_path = folder / value[1]
-        gt_frame_path = folder / val_gt[idx]
+        first_frame_name, extension = value[0].split('.')
+        gt_name = val_gt[idx].split('.')[0]
+        input_frames_path = Path(val_input_path/gt_name)
+        if not input_frames_path.exists():
+            input_frames_path.mkdir()
 
-        new_first_frame_name = str(name) + '-first.' + extension
-        new_sec_frame_name = str(name) + '-sec.' + extension
-        new_first_frame_path = val_input_path / new_first_frame_name
-        new_sec_frame_path = val_input_path / new_sec_frame_name
-        new_gt_name = str(name) + '-gt.' + extension
-        new_gt_path = val_gt_path / new_gt_name
+        first_frame_path = Path(folder/value[0])
+        sec_frame_path = Path(folder/value[1])
+        gt_frame_path = Path(folder/val_gt[idx])
+
+        new_first_frame_path = Path(input_frames_path / ('first.' + extension))
+        new_sec_frame_path = Path(input_frames_path / ('sec.' + extension))
+        new_gt_path = Path(val_gt_path / val_gt[idx])
+
         shutil.copyfile(first_frame_path, new_first_frame_path)
         shutil.copyfile(sec_frame_path, new_sec_frame_path)
         shutil.copyfile(gt_frame_path, new_gt_path)
@@ -106,4 +118,6 @@ def data_prepare(folder):
 
 if __name__ == '__main__':
     data_prepare(data_path)
+
+
 
