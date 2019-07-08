@@ -1,6 +1,5 @@
 .ipynb_checkpoints
 .idea
 __pycache__/
-data/*
-!data/dslf/data_prepare
+
 
