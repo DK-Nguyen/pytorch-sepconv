@@ -1,21 +1,20 @@
-import numpy as np
 import os
 from torch.utils.data import Dataset
 from torchvision import transforms
 from pathlib import Path
 import cv2
+from utils.helpers import to_cuda
 
 
 class InterpolationDataset(Dataset):
     """
     Reads the images into tensors
-
     """
 
     def __init__(self, data_path, resize=None, im_extension='.png'):
         """
-        :param data_path:
-        :param resize:
+        :param data_path: the path to the dataset
+        :param resize: the size to resize the image to
         """
         if resize is not None:
             self.transform = transforms.Compose([
@@ -41,9 +40,9 @@ class InterpolationDataset(Dataset):
         sec_frame_path = Path(self.input_frame_paths[index]/'sec.png').absolute().as_posix()
         gt_frame_path = Path(self.gt_frame_paths[index]).absolute().as_posix()
 
-        first_frame = self.transform(cv2.imread(first_frame_path))
-        sec_frame = self.transform(cv2.imread(sec_frame_path))
-        gt_frame = self.transform(cv2.imread(gt_frame_path))
+        first_frame = to_cuda(self.transform(cv2.imread(first_frame_path)))
+        sec_frame = to_cuda(self.transform(cv2.imread(sec_frame_path)))
+        gt_frame = to_cuda(self.transform(cv2.imread(gt_frame_path)))
 
         return first_frame, gt_frame, sec_frame
 

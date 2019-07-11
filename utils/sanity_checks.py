@@ -182,9 +182,8 @@ def pil_vs_cv2():
 def data_handler_check():
     train_dataset = InterpolationDataset(train_dataset_path)
     train_loader = DataLoader(train_dataset, batch_size=10)
-
-    for first_frame, gt_frame, sec_frame in train_loader:
-        print(first_frame.shape)
+    first_frame, gt_frame, sec_frame = next(iter(train_loader))
+    print(first_frame.shape)
     print('Passed data_handler_check')
 
 
