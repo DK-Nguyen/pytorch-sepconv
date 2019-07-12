@@ -3,6 +3,7 @@ import os
 import torch
 import numpy as np
 from matplotlib import pyplot as plt
+import cv2
 
 
 def to_cuda(x):
@@ -102,21 +103,23 @@ def get_file_names(input_dir, distance, print_file_names=False):
     return file_names
 
 
-def imshow(image, title=None, ax=None, normalize=False):
-    """Imshow for Tensor."""
+def imshow(tensor, title=None, ax=None, normalize=False):
+    """
+    Show a 3D tensor as an image.
+    """
     if ax is None:
         fig, ax = plt.subplots()
     if torch.cuda.is_available():
-        image = image.cpu().detach()
-    image = image.numpy().transpose((1, 2, 0))
+        tensor = tensor.cpu().detach()
+    tensor = tensor.numpy().transpose((1, 2, 0))
 
     if normalize:
         mean = np.array([0.485, 0.456, 0.406])
         std = np.array([0.229, 0.224, 0.225])
-        image = std * image + mean
-        image = np.clip(image, 0, 1)
+        tensor = std * tensor + mean
+        tensor = np.clip(tensor, 0, 1)
 
-    ax.imshow(image)
+    ax.imshow(tensor)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['left'].set_visible(False)
@@ -127,3 +130,21 @@ def imshow(image, title=None, ax=None, normalize=False):
     plt.title(title)
 
     return ax
+
+
+def imwrite(tensor, output_path, un_normalize=True):
+    """
+    Write a 3D tensor into image.
+    """
+    if torch.cuda.is_available():
+        tensor = tensor.cpu().detach()
+    tensor = tensor.numpy().transpose((1, 2, 0))
+    if un_normalize:
+        tensor = tensor * 255  # convert to [0, 255] range
+    cv2.imwrite(output_path, tensor)
+
+
+def plot_losses(train_losses, val_losses):
+    plt.plot(train_losses, label='Training loss')
+    plt.plot(val_losses, label='Validation loss')
+    plt.legend(frameon=False)

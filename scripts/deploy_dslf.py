@@ -24,10 +24,10 @@ import argparse
 import time
 
 # commands for testing on small dataset
-# python dslf.py --mode small --input my_input --output my_output
+# python deploy_dslf.py --mode small --input my_input --output my_output
 
 # exp commands for testing on dslf dataset
-# python dslf.py --model l1 --distance 16
+# python deploy_dslf.py --model l1 --distance 16
 
 parser = argparse.ArgumentParser(description='DSLF Test')
 

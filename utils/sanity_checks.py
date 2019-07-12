@@ -1,7 +1,6 @@
 """
 This Module is used to test if the functions and classes in the project work as expected
 """
-import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -9,14 +8,12 @@ import time
 from pathlib import Path
 import PIL.Image as Image
 import cv2
-import matplotlib.pyplot as plt
 
 from model.layers.features_extraction import FeaturesExtraction
 from model.layers.subnet_kernel import SubnetKernels
-from model.split_model import SepConvNet
-from utils.helpers import get_file_names, to_cuda
+from model.model import SepConvNet
+from utils.helpers import get_file_names, to_cuda, imshow
 from utils.data_handler import InterpolationDataset
-
 
 project_path = Path(__file__).parent.parent
 # weights path
@@ -180,11 +177,19 @@ def pil_vs_cv2():
 
 
 def data_handler_check():
-    train_dataset = InterpolationDataset(train_dataset_path)
-    train_loader = DataLoader(train_dataset, batch_size=10)
-    first_frame, gt_frame, sec_frame = next(iter(train_loader))
+    val_dataset = InterpolationDataset(val_dataset_path)
+    val_loader = DataLoader(val_dataset, batch_size=2)
+    # for ff, gtf, sf in val_loader:
+    a, b = val_dataset.get_path_lists()
+    first_frame, gt_frame, sec_frame, gt_name = next(iter(val_loader))
+    print(gt_name)
     print(first_frame.shape)
     print('Passed data_handler_check')
+
+
+def get_files_name_check():
+    get_file_names(castle_dataset_path, 4, print_file_names=True)
+    print('Passed get files name for inference')
 
 
 if __name__ == '__main__':
@@ -193,5 +198,6 @@ if __name__ == '__main__':
     # subnet_kernel_check()
     # model_check()
     # pil_vs_cv2()
-    # get_file_names(castle_dataset_path, 4, print_file_names=True)
+    # get_files_name_check()
     data_handler_check()
+
