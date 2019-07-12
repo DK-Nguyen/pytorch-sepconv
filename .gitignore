@@ -3,4 +3,4 @@
 __pycache__/
 data/*
 !data/data_prepare.py
-
+outputs/
