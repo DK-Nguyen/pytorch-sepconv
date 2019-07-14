@@ -4,10 +4,10 @@ import shutil
 import argparse
 
 parser = argparse.ArgumentParser(description='Preparing data')
-parser.add_argument('--data_dir', type=str, default='dslf3', help='the folder that contains images')
+parser.add_argument('--data_dir', type=str, default='dslf', help='the folder that contains images')
 parser.add_argument('--train_dir', type=str, default='train', help='the folder that will contain train data')
 parser.add_argument('--val_dir', type=str, default='val', help='the folder that will contain validation data')
-parser.add_argument('--distance', type=int, default=32, help='the distance between 2 input images')
+parser.add_argument('--distance', type=int, default=64, help='the distance between 2 input images')
 parser.add_argument('--train_val_ratio', type=float, default=0.7, help='the ratio between number of images '
                                                                        'in train and val folders')
 args = parser.parse_args()
@@ -47,7 +47,7 @@ def data_prepare(folder):
     if not val_input_path.exists():
         val_input_path.mkdir()
 
-    file_names = [f for f in os.listdir(folder)]
+    file_names = [f for f in os.listdir(folder) if f != '.ipynb_checkpoints']
     input_names = []
     gt_names = []
 
@@ -73,8 +73,8 @@ def data_prepare(folder):
     train_gt = [f for f in gt_names[:int(len(gt_names)*train_val_ratio)]]
     val_input = [f for f in input_names[int(len(input_names)*train_val_ratio):]]
     val_gt = [f for f in gt_names[int(len(input_names)*train_val_ratio):]]
-    print(len(train_input))
-    print(len(val_input))
+    # print(f'Length of train_input: {len(train_input)}')
+    # print(f'Length of val_input: {len(val_input)}')
 
     # copy & rename the files for the train folder
     for idx, value in enumerate(sorted(train_input)):

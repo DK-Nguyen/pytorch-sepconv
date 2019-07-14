@@ -1,6 +1,7 @@
 .ipynb_checkpoints
 .idea
 __pycache__/
+outputs/
 data/*
 !data/data_prepare.py
-outputs/
+weights/
