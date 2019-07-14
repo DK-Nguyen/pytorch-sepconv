@@ -13,8 +13,8 @@ from model.model import SepConvNet
 
 parser = argparse.ArgumentParser(description='SepConv Pytorch')
 # params
-parser.add_argument('--train_dir', type=str, default='data/dslf/train')
-parser.add_argument('--val_dir', type=str, default='data/dslf/val')
+parser.add_argument('--train_dir', type=str, default='data/train_32')
+parser.add_argument('--val_dir', type=str, default='data/val_32')
 parser.add_argument('--out_dir', type=str, default='outputs/output_dslf')
 parser.add_argument('--load_model', type=str, default='weights/sepconv_weights')
 parser.add_argument('--save_weights', type=str, default='weights/transfer_learning_weights')
