@@ -1,31 +1,38 @@
 from pathlib import Path
 import os
 import shutil
+import argparse
 
-data_path = Path(Path.cwd() / 'dslf')
-# data_path2 = Path(Path.cwd() / 'dslf2')
-# data_path3 = Path(Path.cwd() / 'dslf3')
-# data_path4 = Path(Path.cwd() / 'dslf4')
+parser = argparse.ArgumentParser(description='Preparing data')
+parser.add_argument('--data_dir', type=str, default='dslf3', help='the folder that contains images')
+parser.add_argument('--train_dir', type=str, default='train', help='the folder that will contain train data')
+parser.add_argument('--val_dir', type=str, default='val', help='the folder that will contain validation data')
+parser.add_argument('--distance', type=int, default=32, help='the distance between 2 input images')
+parser.add_argument('--train_val_ratio', type=float, default=0.7, help='the ratio between number of images '
+                                                                       'in train and val folders')
+args = parser.parse_args()
 
-train_path = Path(Path.cwd() / 'train')
-val_path = Path(Path.cwd() / 'val')
-train_gt_path = Path(Path.cwd() / 'train' / 'gt')
-train_input_path = Path(Path.cwd() / 'train' / 'input')
-val_gt_path = Path(Path.cwd() / 'val' / 'gt')
-val_input_path = Path(Path.cwd() / 'val' / 'input')
-
-distance = 128
-train_val_ratio = 0.7
+# make the path based on arguments from terminal
+data_path = Path(Path.cwd() / args.data_dir)
+train_path = Path(Path.cwd() / (args.train_dir + '_' + str(args.distance)))
+val_path = Path(Path.cwd() / (args.val_dir + '_' + str(args.distance)))
+train_gt_path = Path(Path.cwd() / train_path / 'gt')
+train_input_path = Path(Path.cwd() / train_path / 'input')
+val_gt_path = Path(Path.cwd() / val_path / 'gt')
+val_input_path = Path(Path.cwd() / val_path / 'input')
+# other parameters
+distance = args.distance
+train_val_ratio = args.train_val_ratio
 
 
 def data_prepare(folder):
     """
-     Process the data: loop through the folder (with names like '0001.png', '0002.png'...)
+     Process the data: loop through the folder of images with names like '0001.png', '0002.png'... of the same pattern.
      Get the proper file names according to the distance provided. Move the files into
      input and gt folders.
     :param folder: the path to the folder you want to  process the data
-    :return: does not return anything
     """
+
     # Make the folders
     if not train_path.exists():
         train_path.mkdir()
