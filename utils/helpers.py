@@ -1,10 +1,11 @@
 import math
 import os
 import torch
+from torchvision import transforms
 import numpy as np
 from matplotlib import pyplot as plt
 import cv2
-
+import csv
 
 def to_cuda(x):
     if torch.cuda.is_available():
@@ -14,32 +15,31 @@ def to_cuda(x):
 
 def get_file_names(input_dir, distance, print_file_names=False):
     """
-    Get the lists of corresponding file names we need to interpolate images (used to run the pre-trained weight
-    on a dataset that consists images with names in form '0001.extension', '0002.extension'...)
+    Get the lists of corresponding image names we need to interpolate in a folder that contains images with
+    names in form 0001.png, 0002.png ...
 
     :param input_dir: the path to the folder that contains ground truth images
-    :param distance: the distance between 2 ground truth images that we want to get the interpolated image of them
+    :param distance: the distance between 2 ground truth images
+                     distance must be 2^r (r = [2, 3, 4 ... 6])
     :param print_file_names: if we want to print the file_names after getting them, set it to 'True'
-    :return file_names - if distance = 4, we have 2 rounds, the return variable is a map that looks like this:
+    :return file_names (a dictionary) - if distance = 4, we have 2 rounds, the returned dict looks like this:
                         {1: ([001.png, 0005.png..., 189.png],
                             [0005.png, 0009.png..., 193.png],
-                            [0003i.png, 0007i.png, ..., 191i.png])
-                         2: ([0001.png, 0003i.png,..., 191i.png]
-                             [0003i.png, 0005.png,..., 193.png]
-                             [0002ii.png, 0004ii.png,..., 192ii.png])
-                         final: [0001.png, 0002ii.png, 0003i.png, 0004ii.png, 0005.png, ..., 192ii.png, 193.png]
+                            [0003i.png, 0007.png, ..., 191.png])
+                         2: ([0001.png, 0003.png,..., 191.png]
+                             [0003.png, 0005.png,..., 193.png]
+                             [0002.png, 0004.png,..., 192.png])
                         }
 
                         Explanation:
                         Round 1: Interpolating between 1 & 5 to get 3i, 5 & 9 to get 7i, ...
                                  The first_ims list is  [0001.png, 0005.png, 0009.png, ..., 189.png]
                                  The sec_ims list is    [0005.png, 0009.png, 0013.png, ..., 193.png]
-                                 The output_ims list is [0003i.png, 0007i.png, 0011i.png, ..., 191i.png]
-                        Round 2. Interpolating between 1 & 3i to get 2ii, 3i & 5 to get 4ii, ...
-                                 The first_ims list is  [0001.png, 0003i.png, 0005.png, ..., 191i.png]
-                                 The sec_ims list is    [0003i.png, 0005.png, 0007i.png, ..., 193.png]
-                                 The output_ims list is [0002ii.png, 0004ii.png, 0006ii.png, ..., 192ii.png]
-                        The final names: [0001.png, 0002ii.png, 0003i.png, 0004ii.png, 0005.png..., 192ii.png, 193.png]
+                                 The output_ims list is [0003.png, 0007.png, 0011.png, ..., 191.png]
+                        Round 2. Interpolating between 1 & 3 to get 2, 3 & 5 to get 4, ...
+                                 The first_ims list is  [0001.png, 0003.png, 0005.png, ..., 191.png]
+                                 The sec_ims list is    [0003.png, 0005.png, 0007.png, ..., 193.png]
+                                 The output_ims list is [0002.png, 0004.png, 0006.png, ..., 192.png]
     """
 
     number_of_rounds = int(math.log2(distance))
@@ -59,7 +59,7 @@ def get_file_names(input_dir, distance, print_file_names=False):
             sec_ims = gt_files[distance::distance]
             output_ims = gt_files[int(distance / 2)::distance]
             # put 'i' into the names of interpolated files e.g. 0003.png -> 0003i.png
-            output_ims[:] = [(name.split('.')[0] + 'i' + '.' + name.split('.')[1]) for name in output_ims]
+            output_ims[:] = [(name.split('.')[0] + '.' + name.split('.')[1]) for name in output_ims]
             assert len(first_ims) == len(sec_ims), "Lengths of first list and second list are different"
             assert len(first_ims) == len(output_ims), "Lengths of first list and output list are different"
             file_names[round_number] += (first_ims, sec_ims, output_ims)
@@ -69,36 +69,34 @@ def get_file_names(input_dir, distance, print_file_names=False):
             first_ims = sorted(file_names[round_number - 1][0] + file_names[round_number - 1][2])
             sec_ims = sorted(file_names[round_number - 1][1] + file_names[round_number - 1][2])
             output_ims = gt_files[int(distance / (2 ** round_number))::int(distance / (2 ** (round_number - 1)))]
-            output_ims[:] = [(name.split('.')[0] + 'i'*round_number + '.' + name.split('.')[1]) for name in output_ims]
+            output_ims[:] = [(name.split('.')[0] + '.' + name.split('.')[1]) for name in output_ims]
             assert len(first_ims) == len(sec_ims), \
                 print(f"Lengths of first list and second list are different: {len(first_ims)} vs {len(sec_ims)}")
             assert len(first_ims) == len(output_ims), \
                 print(f"Lengths of first list and output list are different: {len(first_ims)} vs {len(output_ims)}")
             file_names[round_number] += (first_ims, sec_ims, output_ims)
 
-    # final output is concatenated from all of the round's outputs, 
-    # the first images and the last image of the first round.
-    # the length must be 193
-    file_names['final'] = []
-    for round_number in range(1, number_of_rounds + 1):  # concatenating the outputs of all rounds
-        file_names['final'] += file_names[round_number][2]
-    file_names['final'] += file_names[1][0]  # concatenating the first images of the first round
-    file_names['final'].append(file_names[1][1][-1])  # concatenating the the last image.
-    file_names['final'] = sorted(file_names['final'])
-    assert len(file_names['final']) == 193, print(f"Length of the final list is {len(file_names['final'])}, not 193")
+    # # final output is concatenated from all of the round's outputs,
+    # # the first images and the last image of the first round.
+    # # the length must be 193
+    # final_names = []
+    # for round_number in range(1, number_of_rounds + 1):  # concatenating the outputs of all rounds
+    #     final_names += file_names[round_number][2]
+    # final_names += file_names[1][0]  # concatenating the first images of the first round
+    # final_names.append(file_names[1][1][-1])  # concatenating the the last image.
+    # final_names = sorted(final_names)
+    # assert len(final_names) == 193, print(f"Length of the final list is {len(final_names)}, not 193")
 
     # print the file_names
     if print_file_names:
+        print(f'--- File names with Distance {distance}: ----')
         for round_num, fileNameLists in file_names.items():
-            if round_num != 'final':
-                print(f'Round Number {round_num}, sizes of the lists: '
-                      f'{len(fileNameLists[0])}, {len(fileNameLists[1])}, {len(fileNameLists[2])}')
-                print(fileNameLists[0])
-                print('Second Images Names:', fileNameLists[1])
-                print('Interpolated Images Names:', fileNameLists[2])
-                print()
-            else:
-                print('Final Names:', fileNameLists)
+            print(f'Round #{round_num}, sizes of the lists: '
+                  f'{len(fileNameLists[0])}, {len(fileNameLists[1])}, {len(fileNameLists[2])}')
+            print('First Images Names', fileNameLists[0])
+            print('Second Images Names:', fileNameLists[1])
+            print('Interpolated Images Names:', fileNameLists[2])
+            print()
 
     return file_names
 
@@ -134,17 +132,115 @@ def imshow(tensor, title=None, ax=None, normalize=False):
 
 def imwrite(tensor, output_path, un_normalize=True):
     """
-    Write a 3D tensor into image.
+    Write a 3D tensor into image on disk.
     """
     if torch.cuda.is_available():
         tensor = tensor.cpu().detach()
     tensor = tensor.numpy().transpose((1, 2, 0))
     if un_normalize:
         tensor = tensor * 255  # convert to [0, 255] range
+    if type(output_path) is not str:  # convert to string if the path is pathlib.Path
+        output_path = output_path.as_posix()
+
     cv2.imwrite(output_path, tensor)
+
+
+def imread(im_path, un_squeeze=True, un_normalize=False):
+    """
+    Read the image from the path given.
+    :param im_path: the path to the image
+    :param unsqueeze: boolean parameter to tell if we need to unsqeeze the tensor (make a fake dimension to put
+                      into the model)
+           un_normalize: if True, convert the image to [0, 255] range
+    :return: if unsqueeze is True, the 4D tensor with shape (1, #channels, height, width) that represents the image
+            else it is the 3D tensor
+    """
+    if type(im_path) is not str:
+        im_path = im_path.as_posix()
+    image = cv2.imread(im_path)
+    transform = transforms.Compose([transforms.ToTensor()])
+    image = to_cuda(transform(image))
+    if un_squeeze:
+        image = image.unsqueeze(0)
+    if un_normalize:
+        image = image*255
+    return image
 
 
 def plot_losses(train_losses, val_losses):
     plt.plot(train_losses, label='Training loss')
     plt.plot(val_losses, label='Validation loss')
     plt.legend(frameon=False)
+
+
+def rgb2ycbcr(im_rgb):
+    """
+    Convert the image from rgb to ycbcr color space. Used in the function psnr_ycbcr() below
+    :param im_rgb: 3D numpy array that represents an image in RGB color space
+    :return: the image in ycbcr color space
+    """
+    im_rgb = im_rgb.astype(np.float32)
+    im_ycrcb = cv2.cvtColor(im_rgb, cv2.COLOR_RGB2YCR_CB)
+    im_ycbcr = im_ycrcb[:, :, (0, 2, 1)].astype(np.float32)
+    im_ycbcr[:, :, 0] = (im_ycbcr[:, :, 0]*(235-16)+16)/255.0 #to [16/255, 235/255]
+    im_ycbcr[:, :, 1:] = (im_ycbcr[:, :, 1:]*(240-16)+16)/255.0 #to [16/255, 240/255]
+    return im_ycbcr
+
+
+def psnr_ycbcr(gt_im, interpolated_im):
+    """
+    Find the psnr of 2 images in ycbcr color space. Only apply on the first channel of the images
+    :param gt_im: the ground truth image in RGB color space in 3D tensor
+    :param interpolated_im: the interpolated image in RGB color space in 3D tensor
+    :return: the PSNR of the first channel of 2 images in ycbcr color space.
+    """
+    # convert the images from tensor to numpy arrays
+    if torch.cuda.is_available():
+        gt_im = gt_im.cpu().detach()
+        gt_im = gt_im.permute(1, 2, 0).numpy()
+        interpolated_im = interpolated_im.cpu().detach()
+        interpolated_im = interpolated_im.permute(1, 2, 0).numpy()
+
+    # convert the images into ycbcr color space, get only the first channels
+    gt_im_ycbcr = rgb2ycbcr(gt_im)[:, :, 0]
+    interpolated_im_ycbcr = rgb2ycbcr(interpolated_im)[:, :, 0]
+    # find the psnr of the first channels
+    e = np.abs(gt_im_ycbcr - interpolated_im_ycbcr) ** 2
+    mse = np.sum(e) / e.size
+    if mse > 0.001:  # mse should not be zero
+        psnr_err = 10 * np.log10(255**2 / mse)
+        return psnr_err
+    else:
+        pass
+
+
+def psnr(gt_im, interpolated_im):
+    """
+    Find the PSNR between a ground truth image and an interpolated image.
+    :param gt_im: the ground truth image in tensor
+    :param interpolated_im: the interpolated image in tensor
+    :return: float
+    """
+    e = torch.abs(gt_im - interpolated_im) ** 2
+    mse = torch.sum(e) / e.numel()
+    psnr_err = 10 * torch.log10(torch.tensor(255) * torch.tensor(255) / mse)
+
+    return psnr_err.item()
+
+
+def save_csv(save_to, **kwargs):
+    """
+
+    :param save_to: the path to save the csv file to
+    :param kwargs: the key-value pairs to be saved into the csv file
+    :return:
+    """
+    print(f'--- Saving log information to {save_to} ---')
+    with open(save_to, mode='w') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=kwargs.keys())
+        writer.writeheader()
+        writer.writerow(dict(kwargs))
+
+
+
+

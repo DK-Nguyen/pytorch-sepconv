@@ -9,7 +9,11 @@ from model.layers.sepconv import FunctionSepconv
 
 
 class SepConvNet(nn.Module):
-    def __init__(self, subnet_kernel_size):
+    """
+    The Separable Convolutional Network
+    :param subnet_kernel_size: the number of channels in and out for the subnet kernels at the end of the network
+    """
+    def __init__(self, subnet_kernel_size=51):
         super(SepConvNet, self).__init__()
         self.kernel_size = subnet_kernel_size
         self.kernel_pad = subnet_kernel_size//2

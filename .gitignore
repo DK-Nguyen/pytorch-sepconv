@@ -5,3 +5,4 @@ outputs/
 data/*
 !data/data_prepare.py
 weights/
+log_files/

@@ -1,14 +1,16 @@
+import torch
 import os
 from torch.utils.data import Dataset
 from torchvision import transforms
 from pathlib import Path, PurePosixPath
 import cv2
-from utils.helpers import to_cuda
+
+from utils.helpers import to_cuda, imread, imwrite
 
 
 class InterpolationDataset(Dataset):
     """
-    Reads the images into tensors
+    Reads the images into tensors for training
     """
 
     def __init__(self, data_path, resize=None, im_extension='.png'):
@@ -59,5 +61,21 @@ class InterpolationDataset(Dataset):
 
     def get_path_lists(self):
         return self.input_frame_paths, self.gt_frame_paths
+
+
+class DeployDataset(Dataset):
+    def __init__(self, first_image_path, sec_image_path):
+        self.first_im = imread(first_image_path)
+        self.sec_im = imread(sec_image_path)
+
+    def run_model(self, model, out_im_path):
+        """
+        Get the ouput from the model
+        :param model: SepConv Model
+        :param out_im_path: the path of the output image
+        """
+        with torch.no_grad():
+            out_im = model(self.first_im, self.sec_im)
+            imwrite(out_im.squeeze(0), out_im_path)
 
 

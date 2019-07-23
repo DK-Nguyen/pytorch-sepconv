@@ -1,14 +1,28 @@
+"""
+This module prepares the data for transfer learning. It takes the folder of images with names like 0001.png,
+0002.png..., the distance (specified by --distance) between 2 input images for interpolation,
+and the train_val_ratio (--train_val_ratio with argparse). It then produce the proper directory structures,
+with output folders like this:
+- train_distance
+---- gt
+---- input
+
+- val_distance
+---- gt
+---- input
+"""
+
 from pathlib import Path
 import os
 import shutil
 import argparse
 
 parser = argparse.ArgumentParser(description='Preparing data')
-parser.add_argument('--data_dir', type=str, default='dslf', help='the folder that contains images')
+parser.add_argument('--data_dir', type=str, default='dslf3', help='the folder that contains images')
 parser.add_argument('--train_dir', type=str, default='train', help='the folder that will contain train data')
 parser.add_argument('--val_dir', type=str, default='val', help='the folder that will contain validation data')
-parser.add_argument('--distance', type=int, default=64, help='the distance between 2 input images')
-parser.add_argument('--train_val_ratio', type=float, default=0.7, help='the ratio between number of images '
+parser.add_argument('--distance', type=int, default=8, help='the distance between 2 input images')
+parser.add_argument('--train_val_ratio', type=float, default=0.8, help='the ratio between number of images '
                                                                        'in train and val folders')
 args = parser.parse_args()
 
@@ -28,8 +42,7 @@ train_val_ratio = args.train_val_ratio
 def data_prepare(folder):
     """
      Process the data: loop through the folder of images with names like '0001.png', '0002.png'... of the same pattern.
-     Get the proper file names according to the distance provided. Move the files into
-     input and gt folders.
+     Get the proper file names according to the distance provided. Move the files into input and gt folders.
     :param folder: the path to the folder you want to  process the data
     """
 

@@ -8,9 +8,9 @@ from pathlib import Path
 from collections import OrderedDict
 
 weight_folder = Path(__file__).parent.parent/'weights'/'sepconv_weights'
-full_weight = (weight_folder/'network-lf.pytorch').resolve()
-feature_weight = Path(weight_folder/'features-lf.pytorch')
-kernel_weight = Path(weight_folder/'kernels-lf.pytorch')
+full_weight = (weight_folder/'network-l1.pytorch').resolve()
+feature_weight = Path(weight_folder/'features-l1.pytorch')
+kernel_weight = Path(weight_folder/'kernels-l1.pytorch')
 
 
 def splitting_weights(full_weight_path, feature_weight_path, kernel_weight_path):
