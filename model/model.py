@@ -11,7 +11,7 @@ from model.layers.sepconv import FunctionSepconv
 class SepConvNet(nn.Module):
     """
     The Separable Convolutional Network
-    :param subnet_kernel_size: the number of channels in and out for the subnet kernels at the end of the network
+    :param subnet_kernel_size: the number of in and out channels for the subnet kernels at the end of the network
     """
     def __init__(self, subnet_kernel_size=51):
         super(SepConvNet, self).__init__()

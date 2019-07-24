@@ -11,9 +11,7 @@ from torch.utils.data import DataLoader
 from torch import optim
 import torch.nn as nn
 from pathlib import Path
-import os
 import argparse
-import math
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 from datetime import datetime
@@ -69,6 +67,9 @@ if not plots_dir.exists():
 
 
 def train_and_evaluate():
+    """
+    Train and Evaluate the model
+    """
     # load the model and the weights (for each part)
     model = to_cuda(SepConvNet(kernel))
     model.features.load_state_dict(torch.load(features_weight_path))
@@ -93,13 +94,16 @@ def train_and_evaluate():
     # training
     for epoch in range(epochs):
         print(f'|Training|, Epoch {epoch+1}/{epochs}')
+        model.train()
         steps = 0
+
         # prepare the output dir for each epoch
         out_epoch_dir = out_dir_datetime / ('epoch' + str(epoch).zfill(3))
         if not out_epoch_dir.exists():
             out_epoch_dir.mkdir()
 
         with tqdm(total=len(train_loader)) as t:  # use tqdm for progress bar
+            # train
             for first_frame, gt_frame, sec_frame, gt_names in train_loader:
                 steps += 1
                 optimizer.zero_grad()

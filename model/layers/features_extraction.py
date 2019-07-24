@@ -23,6 +23,9 @@ def upsampling_block(channels):
 
 
 class FeaturesExtraction(nn.Module):
+    """
+    The feature extraction part of the SepConv Network
+    """
 
     def __init__(self):
         super(FeaturesExtraction, self).__init__()

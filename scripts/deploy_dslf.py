@@ -49,10 +49,12 @@ weight_path = Path(project_dir / args.weight_path)
 log_file_name = date_time + '_' + test_dir.name + '_distance' + str(args.distance)
 log_file_path = Path(project_dir / args.log_dir / (log_file_name + '.csv'))
 
+
 def prepare_output_dir(out_dir, test_dir):
     """
     Prepare the output directory when deploy the model on multiple images.
-    :return:
+    :return: the file_names necessary to do the inference of the model on (see the function get_file_names in
+             utils.helper for more information)
     """
 
     if not out_dir.exists():

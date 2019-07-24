@@ -192,6 +192,10 @@ def get_files_name_check():
     print('Passed get files name for inference')
 
 
+def debug_sepconv():
+    pass
+
+
 if __name__ == '__main__':
     # reading_weights_check(features_weight_path, kernels_weight_path)
     # features_extraction_check()
@@ -199,5 +203,13 @@ if __name__ == '__main__':
     # model_check()
     # pil_vs_cv2()
     # get_files_name_check()
-    data_handler_check()
+    # data_handler_check()
+
+    # debug sepconv
+    model = to_cuda(SepConvNet(51))
+    model.features.load_state_dict(torch.load(features_weight_path))
+    model.subnet_kernel.load_state_dict(torch.load(kernels_weight_path))
+    frame0 = to_cuda(torch.randn(1, 3, 1280, 720))
+    frame2 = to_cuda(torch.randn(1, 3, 1280, 720))
+    frame_out = model(frame0, frame2)
 
