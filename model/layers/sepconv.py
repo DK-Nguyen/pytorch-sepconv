@@ -168,7 +168,7 @@ class FunctionSepconv(torch.autograd.Function):
         assert (intInputHeight - intFilterSize == intOutputHeight - 1)
         assert (intInputWidth - intFilterSize == intOutputWidth - 1)
 
-        assert (input.is_contiguous() == True)
+        assert (input.is_contiguous() == True)  # check if input tensor is contiguous in memory in C order.
         assert (vertical.is_contiguous() == True)
         assert (horizontal.is_contiguous() == True)
 

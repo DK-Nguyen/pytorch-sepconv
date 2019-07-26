@@ -206,6 +206,7 @@ if __name__ == '__main__':
     # data_handler_check()
 
     # debug sepconv
+
     model = to_cuda(SepConvNet(51))
     model.features.load_state_dict(torch.load(features_weight_path))
     model.subnet_kernel.load_state_dict(torch.load(kernels_weight_path))

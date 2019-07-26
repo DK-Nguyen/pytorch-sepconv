@@ -18,7 +18,7 @@ def subnet(subnet_kernel_size):
 
 class SubnetKernels(torch.nn.Module):
     """
-    They key idea of the network: the separable subnet kernel
+    Estimates the separable subnet kernels
     """
     def __init__(self, subnet_kernel_size):
         super(SubnetKernels, self).__init__()
