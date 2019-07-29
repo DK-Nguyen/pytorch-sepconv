@@ -9,8 +9,6 @@ Interpolate I1 and I2, get i2
 Interpolate I1 and i2, get i1
 Interpolate i2 and I2, get i3
 """
-import sys
-sys.path.append('/pytorch-sepconv')
 
 import argparse
 from datetime import datetime
