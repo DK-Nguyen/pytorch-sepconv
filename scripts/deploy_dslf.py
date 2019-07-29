@@ -20,15 +20,15 @@ from datetime import datetime
 
 from utils.helpers import get_file_names, to_cuda, imread, psnr, save_csv, psnr_ycbcr
 from model.model import SepConvNet
-from utils.data_handler import DeployDataset
+from utils.data_handler import DeployDslfDataset
 
-parser = argparse.ArgumentParser(description='Deploying SepConv Pretrained Model')
+parser = argparse.ArgumentParser(description='Deploying SepConv Pretrained Model on DSLF Dataset')
 
-parser.add_argument('--test_dir', type=str, default='data/test/icme3')
-parser.add_argument('--output_dir', type=str, default='outputs/output_deploy', help='directory that'
+parser.add_argument('--test_dir', type=str, default='data/dslf/test/icme3')
+parser.add_argument('--output_dir', type=str, default='outputs/output_deploy_dslf', help='directory that'
                                                                                     'contains output images')
 parser.add_argument('--weight_path', type=str, default='weights/deploy_weights/'
-                                                       '07.17.2019-distance_08-fine-tune-l1.pytorch')
+                                                       'distance08_fineTuneL1.pytorch')
 parser.add_argument('--log_dir', type=str, default='log_files/log_deploy', help='directory to output csv file that '
                                                                             'contains info like time consumed, psnr')
 parser.add_argument('--mode', type=str, choices=['multiple', 'one'], default='multiple',
@@ -107,14 +107,13 @@ def deploying(file_names, model, out_dir):
         print(f'Round #{key}')
         with tqdm(total=len(value[0])) as t:
             for idx, name in enumerate(value[0]):  # loop through the first list
-
                 # get the proper paths
                 first_im_path = Path(out_dir / name)
                 sec_im_path = Path(out_dir / value[1][idx])
                 out_im_path = Path(out_dir / value[2][idx])
                 # print(f'Interpolating between {first_im_path} and {sec_im_path}')
                 # read the images into 4-D Tensors and do the interpolation
-                deploying = DeployDataset(first_im_path, sec_im_path)
+                deploying = DeployDslfDataset(first_im_path, sec_im_path)
                 deploying.run_model(model, out_im_path)
                 # print(f'Writing the interpolated image to {out_im_path}')
                 t.update()
