@@ -80,7 +80,7 @@ class DeployDslfDataset(Dataset):
         """
         with torch.no_grad():
             out_im = model(self.first_im, self.sec_im)
-            imwrite(out_im.squeeze(0), out_im_path)
+            imwrite(out_im, out_im_path, squeeze=True)
         # return out_im
 
 
@@ -89,8 +89,15 @@ class DeployCameraRigDataset(Dataset):
     This dataset reads 2 images, then interpolate 3 images. Used in deploy_camera_rig.py
     """
     def __init__(self, first_im_path, sec_im_path):
-        self.first_im = imread(first_im_path)
-        self.sec_im = imread(sec_im_path)
+        """
+        Constructor
+        :param first_im_path: (pathlib ojbect) the path to the first image
+        :param sec_im_path: (pathlib object) the path to the second image
+        """
+        self.first_im_path = first_im_path
+        self.sec_im_path = sec_im_path
+        self.first_im = imread(first_im_path, resize=(1900, 1200))
+        self.sec_im = imread(sec_im_path, resize=(1900, 1200))
 
     def interpolating(self, model, output_im_paths):
         """
@@ -100,11 +107,12 @@ class DeployCameraRigDataset(Dataset):
                                 e.g. [i1_path, i2_path, i3_path]
         """
         i1_path, i2_path, i3_path = output_im_paths
+        print(f'Interpolating between {self.first_im_path.name} and {self.sec_im_path.name}')
         with torch.no_grad():
             i2 = model(self.first_im, self.sec_im)
-            imwrite(i2.squeeze(0), i2_path)
+            imwrite(i2, i2_path, squeeze=True)
             i1 = model(self.first_im, i2)
-            imwrite(i1.squeeze(0), i1_path)
+            imwrite(i1, i1_path, squeeze=True)
             i3 = model(i2, self.sec_im)
-            imwrite(i3.squeeze(0), i3_path)
+            imwrite(i3, i3_path, squeeze=True)
 

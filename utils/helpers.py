@@ -6,6 +6,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 import csv
+from pathlib import Path
+
 
 def to_cuda(x):
     if torch.cuda.is_available():
@@ -130,12 +132,18 @@ def imshow(tensor, title=None, ax=None, normalize=False):
     return ax
 
 
-def imwrite(tensor, output_path, un_normalize=True):
+def imwrite(tensor, output_path, un_normalize=True, squeeze=False):
     """
     Write a 3D tensor into image on disk.
+    :param tensor: (torch.tensor) the 3D or 4D tensor of an image
+           output_path: (pathlib object or str) the path to save to image to
+           un_normalize: (bool) if True, convert the tensor from range [0,1] to range [0,255]
+           squeeze: (bool) if True, squeeze to remove the fake dimension of the tensor
     """
     if torch.cuda.is_available():
         tensor = tensor.cpu().detach()
+    if squeeze:
+        tensor = tensor.squeeze(0)
     tensor = tensor.numpy().transpose((1, 2, 0))
     if un_normalize:
         tensor = tensor * 255  # convert to [0, 255] range
@@ -145,19 +153,22 @@ def imwrite(tensor, output_path, un_normalize=True):
     cv2.imwrite(output_path, tensor)
 
 
-def imread(im_path, un_squeeze=True, un_normalize=False):
+def imread(im_path, un_squeeze=True, un_normalize=False, resize=None):
     """
     Read the image from the path given.
     :param im_path: the path to the image
-    :param unsqueeze: boolean parameter to tell if we need to unsqeeze the tensor (make a fake dimension to put
+    :param un_squeeze: boolean parameter to tell if we need to unsqeeze the tensor (make a fake dimension to put
                       into the model)
            un_normalize: if True, convert the image to [0, 255] range
+           resize: (width, height) resize to a desirable size if provided. Used when 2 images have different sizes
     :return: if unsqueeze is True, the 4D tensor with shape (1, #channels, height, width) that represents the image
             else it is the 3D tensor
     """
     if type(im_path) is not str:
         im_path = im_path.as_posix()
     image = cv2.imread(im_path)
+    if resize is not None:
+        image = cv2.resize(image, resize)
     transform = transforms.Compose([transforms.ToTensor()])
     image = to_cuda(transform(image))
     if un_squeeze:
@@ -242,5 +253,13 @@ def save_csv(save_to, **kwargs):
         writer.writerow(dict(kwargs))
 
 
-
+if __name__ == '__main__':
+    project_path = Path(__file__).parent.parent
+    im_path = Path(project_path / 'data/camera_rig/Position02/Position02_Camera10_rec01.png')
+    output_path = Path(project_path / 'outputs/experiment.png')
+    im = imread(im_path)
+    im_resized = imread(im_path, resize=(1900, 1200))
+    print(im.shape)
+    print(im_resized.shape)
+    imwrite(im_resized, output_path, squeeze=True)
 
