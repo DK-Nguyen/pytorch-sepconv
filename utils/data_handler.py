@@ -84,7 +84,7 @@ class DeployDslfDataset(Dataset):
         # return out_im
 
 
-class DeployCameraRigDataset(dataset):
+class DeployCameraRigDataset(Dataset):
     """
     This dataset reads 2 images, then interpolate 3 images. Used in deploy_camera_rig.py
     """
