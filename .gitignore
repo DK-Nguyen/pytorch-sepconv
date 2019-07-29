@@ -5,3 +5,4 @@ outputs/*
 data/*
 !data/data_prepare.py
 log_files/
+weights/transfer_learning_weights
