@@ -91,7 +91,7 @@ def interpolating(output_dir):
     if args.num_output == 3:
         print(f'Doing interpolation on {args.data_dir}, '
               f'number of interpolated images for a pair of input: {args.num_output}')
-        for position in os.listdir(output_dir):
+        for position in sorted(os.listdir(output_dir)):
             position_path = Path(output_dir / position)
             print(f'Interpolating {position}')
             image_paths = (Path(position_path / image) for image in sorted(os.listdir(position_path)))
