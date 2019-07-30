@@ -40,6 +40,8 @@ now = datetime.now()
 date_time = now.strftime('%m.%d.%Y')
 project_dir = Path(__file__).parent.parent
 data_dir = Path(project_dir / args.data_dir)
+if not Path(project_dir / args.output_dir).exists():
+    Path(project_dir / args.output_dir).mkdir()
 output_dir = Path(project_dir / args.output_dir / date_time)
 weight_path = Path(project_dir / args.weight_path)
 
