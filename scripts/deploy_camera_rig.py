@@ -33,6 +33,8 @@ parser.add_argument('--weight_path', type=str, default='weights/deploy_weights/n
 parser.add_argument('--num_output', type=int, default=3, help='the number of desired interpolated images')
 parser.add_argument('--image_extension', type=str, default='.png',
                     help='the image extension that you want to interpolate')
+parser.add_argument('--resize', nargs=2, type=int, default=[1900, 1200],
+                    help='(width, height) of the images to resize to')
 
 args = parser.parse_args()
 
@@ -80,7 +82,7 @@ def get_model(weight_path):
     return sepconv_model
 
 
-def interpolating(output_dir):
+def interpolating(output_dir, resize):
     """
     Do the interpolation on the camera rig dataset.
     :param output_dir: the output directory that contains images copied from the dataset. Also it will
@@ -109,13 +111,13 @@ def interpolating(output_dir):
                 # print(i1_path, i2_path, i3_path)
 
                 # now start interpolating and get the results
-                interpolating_object = DeployCameraRigDataset(i, next(it))
+                interpolating_object = DeployCameraRigDataset(i, next(it), resize=resize)
                 interpolating_object.interpolating(model, output_paths)
 
 
 if __name__ == '__main__':
     start = time.time()
     prepare_output_dir(data_dir, output_dir)
-    interpolating(output_dir)
+    interpolating(output_dir, tuple(args.resize))
     end = time.time()
-    print(f'Execution time: {end - start}')
+    print(f'Execution time: {end - start :.2f}s')
