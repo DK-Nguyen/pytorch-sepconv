@@ -111,12 +111,15 @@ class DeployCameraRigDataset(Dataset):
         with torch.no_grad():
             i2 = model(self.first_im, self.sec_im)
             imwrite(i2, i2_path, squeeze=True)
-            print(f'writing {i2_path.name} to disk')
+            print(f'writing {i2_path.name} to disk, '
+                  f'CUDA Memory: {torch.cuda.memory_allocated()*1e-6:.2f} MB')
             i1 = model(self.first_im, i2)
             imwrite(i1, i1_path, squeeze=True)
-            print(f'writing {i1_path.name} to disk')
+            print(f'writing {i1_path.name} to disk, '
+                  f'CUDA Memory: {torch.cuda.memory_allocated()*1e-6:.2f} MB')
             i3 = model(i2, self.sec_im)
             imwrite(i3, i3_path, squeeze=True)
-            print(f'writing {i3_path.name} to disk')
+            print(f'writing {i3_path.name} to disk, '
+                  f'CUDA Memory: {torch.cuda.memory_allocated()*1e-6:.2f} MB')
 
 

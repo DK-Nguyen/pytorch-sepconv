@@ -40,7 +40,7 @@ args = parser.parse_args()
 
 # make the paths and folders from args
 now = datetime.now()
-date_time = now.strftime('%m.%d.%Y')
+date_time = now.strftime('%m.%d.%Y_%H-%M')
 project_dir = Path(__file__).parent.parent
 data_dir = Path(project_dir / args.data_dir)
 if not Path(project_dir / args.output_dir).exists():
@@ -118,6 +118,6 @@ def interpolating(output_dir, resize=None):
 if __name__ == '__main__':
     start = time.time()
     prepare_output_dir(data_dir, output_dir)
-    interpolating(output_dir)
+    interpolating(output_dir, resize=None)  # resize can be None or tuple(args.resize)
     end = time.time()
     print(f'Execution time: {end - start :.2f}s')
