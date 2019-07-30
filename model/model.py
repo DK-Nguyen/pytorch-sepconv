@@ -53,25 +53,25 @@ class SepConvNet(nn.Module):
 
         # extract the features with an auto-encoder
         tensorCombine = self.features(frame0, frame2)
-        print('tensorCombine', tensorCombine.shape)
+        # print('tensorCombine', tensorCombine.shape)
 
         # estimate a pair of 2D Convolution kernels K1 and K2 and
         # here, K1 = Vertical1 * Horizontal1 (*: convolution)
         #       K2 = Vertical2 * Horizontal2
         Vertical1, Horizontal1, Vertical2, Horizontal2 = self.subnet_kernel(tensorCombine)
-        print('Vertical and Horizontal', Vertical1.shape, Horizontal1.shape, Vertical2.shape, Horizontal2.shape)
+        # print('Vertical and Horizontal', Vertical1.shape, Horizontal1.shape, Vertical2.shape, Horizontal2.shape)
 
         # uses the pair of K1 and K2 to convolve with the input frames I1 and I2 to compute
         # the color of the output pixel I_hat
         tensorDot1 = FunctionSepconv()(self.modulePad(frame0), Vertical1, Horizontal1)
         tensorDot2 = FunctionSepconv()(self.modulePad(frame2), Vertical2, Horizontal2)
-        print('tensorDot1 and 2', tensorDot1.shape, tensorDot2.shape)
+        # print('tensorDot1 and 2', tensorDot1.shape, tensorDot2.shape)
 
         # I_hat(x,y) = K1(x,y)*P1(x,y) + K2(x,y)*P2(x,y)
         # where P1(x,y): the patches center at (x,y) in I1
         #       P2(x,y): the patches center at (x,y) in I2
         frame1 = tensorDot1 + tensorDot2
-        print('frame1', frame1.shape)
+        # print('frame1', frame1.shape)
 
         if h_padded:
             frame1 = frame1[:, :, 0:h0, :]
