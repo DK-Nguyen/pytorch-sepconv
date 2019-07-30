@@ -88,7 +88,7 @@ class DeployCameraRigDataset(Dataset):
     """
     This dataset reads 2 images, then interpolate 3 images. Used in deploy_camera_rig.py
     """
-    def __init__(self, first_im_path, sec_im_path, resize):
+    def __init__(self, first_im_path, sec_im_path, resize=None):
         """
         Constructor
         :param first_im_path: (pathlib ojbect) the path to the first image

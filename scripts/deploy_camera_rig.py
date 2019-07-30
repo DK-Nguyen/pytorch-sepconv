@@ -82,7 +82,7 @@ def get_model(weight_path):
     return sepconv_model
 
 
-def interpolating(output_dir, resize):
+def interpolating(output_dir, resize=None):
     """
     Do the interpolation on the camera rig dataset.
     :param output_dir: the output directory that contains images copied from the dataset. Also it will
@@ -118,6 +118,6 @@ def interpolating(output_dir, resize):
 if __name__ == '__main__':
     start = time.time()
     prepare_output_dir(data_dir, output_dir)
-    interpolating(output_dir, tuple(args.resize))
+    interpolating(output_dir)
     end = time.time()
     print(f'Execution time: {end - start :.2f}s')
