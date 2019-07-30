@@ -93,11 +93,11 @@ def interpolating(output_dir):
         for position in os.listdir(output_dir):
             position_path = Path(output_dir / position)
             print(f'Interpolating {position}')
-            image_paths = (Path(position_path / image) for image in os.listdir(position_path))
+            image_paths = (Path(position_path / image) for image in sorted(os.listdir(position_path)))
             it = iter(image_paths)
             for i in it:
                 # get the names and the paths for the interpolated images
-                # print(i.name, next(it).name)
+                print(i.name, next(it).name)
                 i1_name = i.stem + '_i1' + args.image_extension
                 i1_path = Path(position_path / i1_name)
                 i2_name = i.stem + '_i2' + args.image_extension
@@ -105,13 +105,13 @@ def interpolating(output_dir):
                 i3_name = i.stem + '_i3' + args.image_extension
                 i3_path = Path(position_path / i3_name)
                 output_paths = [i1_path, i2_path, i3_path]
-                # print(i1_path, i2_path, i3_path)
+                print(i1_path, i2_path, i3_path)
 
                 # now start interpolating and get the results
-                interpolating_object = DeployCameraRigDataset(i, next(it))
-                interpolating_object.interpolating(model, output_paths)
+                # interpolating_object = DeployCameraRigDataset(i, next(it))
+                # interpolating_object.interpolating(model, output_paths)
 
 
 if __name__ == '__main__':
-    prepare_output_dir(data_dir, output_dir)
+    # prepare_output_dir(data_dir, output_dir)
     interpolating(output_dir)
