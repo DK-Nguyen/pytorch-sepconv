@@ -18,27 +18,3 @@ This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv.git 
 Intel core i7 4.20GHz (8 CPUs), 32Gb Ram.  
 GPU: NVIDIA GeForce GTX 1080, Total memory: 24Gb, Display Memory (VRAM): 8Gb, Shared Memory: 16Gb.  
 ```
-
-* Method: interpolating 1 image at a time
-```
-* To interpolate an image from 2 inputs images (1280x720 - 1.19Mb each):  
-Time to read and load the 2 input images into CUDA Tensors: 0.09 secs.
-Time to interpolate and write the interpolated image to disk: 0.68 secs.
-Total Time for 1 image: ~ 0.77 seconds.  
-Memory Usage:  ~ 2.5 Gb of GPU.
-* To interpolate the whole Castle folder with distance 4 (interpolating between 0001.png, 0005.png...):  
-Time: 112 secs
-Min PSNR: 36.63; Mean PSNR: 42.38  
-* To interpolate the whole Castle folder with distance 8:  
-Time: 133 secs  
-Min PSNR: 36.18; Mean PSNR: 41.84  
-* To interpolate the whole Castle folder with distance 16:  
-Time: 144 secs 
-Min PSNR: 35.28; Mean PSNR: 40.38
-* To interpolate the whole Castle folder with distance 32:  
-Time: 148 secs
-Min PSNR: 32.34; Mean PSNR: 37.42 
-* To interpolate the whole Castle folder with distance 64:  
-Time: 149 secs
-Min PSNR: 27.87; Mean PSNR: 33.3
-```
