@@ -1,4 +1,4 @@
-# Project: Applying Video Interpolation on Densely Sampled Light Field  
+# Project: Frame Interpolation on Densly Sampled Lightfield Images
 This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv.git as the starting point.
 
 ## Summary
