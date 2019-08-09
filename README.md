@@ -5,8 +5,9 @@ This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv.git 
 * [Description](#Description)
 * [Dataset](#Dataset)
 * [Performance](#Performance)
-* [How to run](#How-to-run)
 * [Project structure](#Project-structure)
+* [How to run](#How-to-run)
+
 
 ### Description
 
