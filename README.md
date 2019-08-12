@@ -12,7 +12,7 @@ This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv.git 
 
 ### Introduction
 Frame interpolation is a classic computer vision problem which tries to generate intermediate animation frames from existing ones to make animation more fluid.  
-<p>
+<p align="center">
     <img src="images/frameInterpolation.jpg" alt><br>
     <em>Figure 1: Frame interpolation</em>
 </p>
