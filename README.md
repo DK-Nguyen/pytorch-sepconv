@@ -1,5 +1,5 @@
 # Frame Interpolation on Densly Sampled Lightfield Images
-This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv.git as the starting point.  
+This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv as the starting point.  
 ## Outline
 * [Introduction](#Introduction)
 * [Differences from original code](#Differences-from-original-code)
@@ -37,8 +37,22 @@ There are also scripts for deploying the model on images depending on situations
 
 ### Dataset
 To run `deploy_dslf.py`, you need to prepare the folder of images with names like *'0001.png'*, *'0002.png'*... in the `\data` directory.  
-To run `deploy_camera_rig.py`, you need to prepare the folder of images taken from the cameras rig, which has a structure like this: `\data\camera_rig\Position02\Position02_Camera01.png`.
+To run `deploy_camera_rig.py`, you need to prepare the folder of images taken from the cameras rig, which has a structure like this: `\data\camera_rig\Position02\Position02_Camera01.png`.  
 To run `transfer_learning.py`, you need to prepare the same folder data with when running `deploy_dslf.py`, but then you need to run `\data\data_prepare.py` to split these into proper train and val directories.
+```
+cd ./data/dslf/;
+data_prepare.py [--data_dir DATA_DIR] [--train_dir TRAIN_DIR]
+                [--val_dir VAL_DIR] 
+                [--distance DISTANCE] 
+                [--train_val_ratio TRAIN_VAL_RATIO] 
+                
+optional arguments:
+    --data_dir DATA_DIR     the folder that contains images with names 0001.png, 0002.png...
+    --train_dir TRAIN_DIR   the folder that will contain train data
+    --val_dir VAL_DIR       the folder that will contain validation data
+    --distance DISTANCE     the distance between 2 input images
+    --train_val_ratio       the ratio between number of images in train and val folders 
+```
 
 ### How to run
 #### `deploy_dslf.py`
