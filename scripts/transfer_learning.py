@@ -87,7 +87,7 @@ def train_and_evaluate():
 
     optimizer = optim.Adam(params=model.subnet_kernel.parameters(), lr=0.001)  # fine-tune the subnet_kernels part
     criterion = nn.MSELoss()
-    val_after = 50  # after training this number of batches, do evaluation
+    val_after = 50  # after training this number of batches, do evaluatiogt n
     running_loss = 0
     train_losses, val_losses, average_psnr = [], [], []
 
