@@ -28,12 +28,12 @@ The model is split into 2 parts: the `feature_extraction` part and the `separabl
 There are also scripts for deploying the model on images depending on situations (further explaination below).  
 
 ### Project Structure
-`\data`: contains the folders of images to deploy the model on.  
-`\images`: containts images in `README.md` and plots of results after doing transfer learning.  
-`\model`: contains the code for the network architecture.  
-`\scripts`: contains the code for transfer learning (fine-tuning the pretrained weights on new data - `transfer_learning.py`), deploying the model on images taken from the cameras rig (`deploy_camera_rig.py`) or a folder of densly sampled images (`deploy_dslf.py`).  
-`\utils`: contains the helper functionalities for the project.  
-`\weights`: contains the pretrained weights (after being split) and also the fine-tuned weights.
+* `\data`: contains the folders of images to deploy the model on.  
+* `\images`: containts images in `README.md` and plots of results after doing transfer learning.  
+* `\model`: contains the code for the network architecture.  
+* `\scripts`: contains the code for transfer learning (fine-tuning the pretrained weights on new data - `transfer_learning.py`), deploying the model on images taken from the cameras rig (`deploy_camera_rig.py`) or a folder of densly sampled images (`deploy_dslf.py`).  
+* `\utils`: contains the helper functionalities for the project.  
+* `\weights`: contains the pretrained weights (after being split) and also the fine-tuned weights.
 
 ### Dataset
 To run `deploy_dslf.py`, you need to prepare the folder of images with names like *'0001.png'*, *'0002.png'*... in the `\data` directory.  
