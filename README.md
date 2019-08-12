@@ -35,7 +35,7 @@ The model is split into 2 parts: the `feature_extraction` part and the `separabl
 `\weights`: contains the pretrained weights (after being split) and also the fine-tuned weights.
 
 ### Dataset
-To run `deploy_dslf.py`, you need to prepare the folder of images with names like '0001.png', '0002.png'... in the `\data` directory.  
+To run `deploy_dslf.py`, you need to prepare the folder of images with names like *'0001.png'*, *'0002.png'*... in the `\data` directory.  
 To run `deploy_camera_rig.py`, you need to prepare the folder of images taken from the cameras rig, which has a structure like this: `\data\camera_rig\Position02\Position02_Camera01.png`.
 To run `transfer_learning.py`, you need to prepare the same folder data with when running `deploy_dslf.py`, but then you need to run `\data\data_prepare.py` to split these into proper train and val directories.
 
@@ -56,7 +56,7 @@ optional arguments:
     --distance DISTANCE         the distance between 2 images in an input pair. If distance is 4, then interpolate between image '0001.png' and '0005.png'
     --image_extension           the extension of the images in the input folder (default: '.png')
 ```
-After preparing the folder of images '0001.png', '0002.png'..., you can run the python file `deploy_dslf.py` to interpolate with the distance you want. For example, if the distance is 4, the algorithm will interpolate between image '0001.png' and '0005.png' to get the interpolated image '0003.png', '0005.png' and '0009.png'... to get interpolated '0007.png'. After that, the second round will be run, on which the algorithm interpolates images '0001.png' and '0003.png' to get interpolated '0002.png'. After running, the output images will be in the folder specified by `--output_dir`.
+After preparing the folder of images *'0001.png'*, *'0002.png'*..., you can run the python file `deploy_dslf.py` to interpolate with the distance you want. For example, if the distance is 4, the algorithm will interpolate between image *'0001.png'* and *'0005.png'* to get the interpolated image *'0003.png'*, *'0005.png'* and *'0009.png'*... to get interpolated *'0007.png'*. After that, the second round will be run, on which the algorithm interpolates images *'0001.png'* and *'0003.png'* to get interpolated *'0002.png'*. After running, the output images will be in the folder specified by `--output_dir`.
 
 #### `deploy_camera_rig.py`
 ```
