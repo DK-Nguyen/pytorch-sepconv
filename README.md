@@ -25,6 +25,7 @@ The model is split into 2 parts: the `feature_extraction` part and the `separabl
     <img src="images/Model.png" alt>
     <em>Figure 2: Separable Convolution Neural Network Architecture</em>
 </p>
+There are also scripts for deploying the model on images depending on situations (further explaination below).  
 
 ### Project Structure
 `\data`: contains the folders of images to deploy the model on.  
