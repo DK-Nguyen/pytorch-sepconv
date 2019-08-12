@@ -21,7 +21,7 @@ This project deploys the Video Frame Interpolation via Adaptive Separable Convol
 
 ### Differences from original code
 The model is split into 2 parts: the `feature_extraction` part and the `separable_convolution` part (the red box in figure 2) for transfer learning.  Also, the pretrained weights are also split into corresponding parts so we can fine-tune them with new data.  
-<p>
+<p align="center">
     <img src="images/Model.png" alt>
     <em>Figure 2: Separable Convolution Neural Network Architecture</em>
 </p>
