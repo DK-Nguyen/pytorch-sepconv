@@ -62,9 +62,9 @@ After preparing the folder of images '0001.png', '0002.png'..., you can run the 
 ```
 cd ./scripts/;
 deploy_camera_rig.py.py [--data_dir DATA_DIR] [--output_dir OUTPUT_DIR]
-                  [--weight_path WEIGHT_PATH] [--log_dir LOG_DIR] 
-                  [--mode MODE] [--distance DISTANCE] 
-                  [--image_extension IMAGE_EXTENSION] 
+                        [--weight_path WEIGHT_PATH] [--log_dir LOG_DIR] 
+                        [--mode MODE] [--distance DISTANCE] 
+                        [--image_extension IMAGE_EXTENSION] 
 
 optional arguments:
     --test_dir TEST_DIR         path to directory that contains input images folders
