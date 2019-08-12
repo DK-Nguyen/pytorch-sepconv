@@ -24,7 +24,8 @@ from utils.data_handler import DeployDslfDataset
 
 parser = argparse.ArgumentParser(description='Deploying SepConv Pretrained Model on DSLF Dataset')
 
-parser.add_argument('--test_dir', type=str, default='data/dslf/test/icme3')
+parser.add_argument('--test_dir', type=str, default='data/dslf/test/icme3', help='directory that'
+                                                                                 'contains input images')
 parser.add_argument('--output_dir', type=str, default='outputs/output_deploy_dslf', help='directory that'
                                                                                     'contains output images')
 parser.add_argument('--weight_path', type=str, default='weights/deploy_weights/'
