@@ -1,8 +1,8 @@
 """
-This module prepares the data for transfer learning. It takes the folder of images with names like 0001.png,
+This module prepares the data for transfer learning. Input: the folders of images with names like 0001.png,
 0002.png..., the distance (specified by --distance) between 2 input images for interpolation,
-and the train_val_ratio (--train_val_ratio with argparse). It then produce the proper directory structures,
-with output folders like this:
+and the train_val_ratio (--train_val_ratio with argparse).
+Output: folders that contain images for transfer learning with structure like this:
 - train_distance
 ---- gt
 ---- input
@@ -21,12 +21,12 @@ parser = argparse.ArgumentParser(description='Preparing data')
 parser.add_argument('--data_dir', type=str, default='dslf3', help='the folder that contains images')
 parser.add_argument('--train_dir', type=str, default='train', help='the folder that will contain train data')
 parser.add_argument('--val_dir', type=str, default='val', help='the folder that will contain validation data')
-parser.add_argument('--distance', type=int, default=8, help='the distance between 2 input images')
-parser.add_argument('--train_val_ratio', type=float, default=0.8, help='the ratio between number of images '
+parser.add_argument('--distance', type=int, default=64, help='the distance between 2 input images')
+parser.add_argument('--train_val_ratio', type=float, default=0.7, help='the ratio between number of images '
                                                                        'in train and val folders')
 args = parser.parse_args()
 
-# make the path based on arguments from terminal
+# make the paths based on arguments from terminal
 data_path = Path(Path.cwd() / args.data_dir)
 train_path = Path(Path.cwd() / (args.train_dir + '_' + str(args.distance)))
 val_path = Path(Path.cwd() / (args.val_dir + '_' + str(args.distance)))

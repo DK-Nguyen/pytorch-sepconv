@@ -3,7 +3,7 @@
 __pycache__/
 outputs/*
 data/*
-!data/data_prepare.py
+!data/dslf/data_prepare.py
 log_files/
 weights/transfer_learning_weights
 notebooks/

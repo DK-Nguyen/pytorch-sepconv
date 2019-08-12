@@ -4,6 +4,7 @@ load the pretrained_weights from the directory specified by --load_model, do the
 (fine tune the pretrained weights on the last part of the network - the subnet_kernel) on the train and val
 folder, then save the weights to the folder specified by --save_weights.
 The output images will be saved to the --out_dir folder.
+TODO: make the class Params that takes hyper parameters from JSON files in the experiments folder
 """
 
 import torch
@@ -23,8 +24,8 @@ from utils.data_handler import InterpolationDataset
 
 parser = argparse.ArgumentParser(description='SepConv Pytorch')
 # params
-parser.add_argument('--train_dir', type=str, default='data/train_8')
-parser.add_argument('--val_dir', type=str, default='data/val_8')
+parser.add_argument('--train_dir', type=str, default='data/dslf/train_16')
+parser.add_argument('--val_dir', type=str, default='data/dslf/val_16')
 parser.add_argument('--out_dir', type=str, default='outputs/output_transfer_learning')
 parser.add_argument('--load_model', type=str, default='weights/sepconv_weights')
 parser.add_argument('--save_weights', type=str, default='weights/transfer_learning_weights')
@@ -34,6 +35,9 @@ parser.add_argument('--image_extension', type=str, default='.png', help='extensi
 parser.add_argument('--kernel', type=int, default=51)
 parser.add_argument('--epochs', type=int, default=10)
 parser.add_argument('--batch_size', type=int, default=1)
+parser.add_argument('--learning_rate', type=float, default=0.001)
+parser.add_argument('--val_after', type=int, default=50, help='define the number of batches that after training on,'
+                                                              'do evaluation')
 
 args = parser.parse_args()
 
@@ -85,9 +89,8 @@ def train_and_evaluate():
     for param in model.features.parameters():
         param.requires_grad = False
 
-    optimizer = optim.Adam(params=model.subnet_kernel.parameters(), lr=0.001)  # fine-tune the subnet_kernels part
+    optimizer = optim.Adam(params=model.subnet_kernel.parameters(), lr=args.learning_rate)  # fine-tune the subnet_kernels part
     criterion = nn.MSELoss()
-    val_after = 50  # after training this number of batches, do evaluatiogt n
     running_loss = 0
     train_losses, val_losses, average_psnr = [], [], []
 
@@ -114,7 +117,7 @@ def train_and_evaluate():
                 running_loss += loss.item()
 
                 # evaluation
-                if steps % val_after == 0:
+                if steps % args.val_after == 0:
                     print(' |Evaluating| ', end=' ')
                     val_loss = 0
                     avg_psnr = 0
@@ -135,11 +138,11 @@ def train_and_evaluate():
 
                     print(f"Epoch {epoch + 1}/{epochs}.. "
                           f"Step {steps}.. "
-                          f"Train loss: {running_loss / val_after:.3f}.. "
+                          f"Train loss: {running_loss / args.val_after:.3f}.. "
                           f"Val loss: {val_loss / len(val_loader):.3f}.. "
                           f"Average PSNR: {avg_psnr / len(val_loader):.3f}")
 
-                    train_losses.append(running_loss / val_after)
+                    train_losses.append(running_loss / args.val_after)
                     val_losses.append(val_loss / len(val_loader))
                     average_psnr.append(avg_psnr / len(val_loader))
 
