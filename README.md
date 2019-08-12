@@ -8,7 +8,6 @@ This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv.git 
 * [Project structure](#Project-structure)
 * [How to run](#How-to-run)
 
-
 ### Description
 
 ### Dataset
