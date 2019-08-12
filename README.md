@@ -39,6 +39,7 @@ There are also scripts for deploying the model on images depending on situations
 To run `deploy_dslf.py`, you need to prepare the folder of images with names like *'0001.png'*, *'0002.png'*... in the `\data` directory.  
 To run `deploy_camera_rig.py`, you need to prepare the folder of images taken from the cameras rig, which has a structure like this: `\data\camera_rig\Position02\Position02_Camera01.png`.  
 To run `transfer_learning.py`, you need to prepare the same folder data with when running `deploy_dslf.py`, but then you need to run `\data\data_prepare.py` to split these into proper train and val directories.
+* `data_prepare.py` usage
 ```
 cd ./data/dslf/;
 data_prepare.py [--data_dir DATA_DIR] [--train_dir TRAIN_DIR]
