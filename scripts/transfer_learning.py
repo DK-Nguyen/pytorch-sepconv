@@ -33,9 +33,9 @@ parser.add_argument('--save_plots', type=str, default='images', help='the folder
                                                                      'psnr plots to.')
 parser.add_argument('--image_extension', type=str, default='.png', help='extension of the images to train')
 parser.add_argument('--kernel', type=int, default=51)
-parser.add_argument('--epochs', type=int, default=10)
+parser.add_argument('--epochs', type=int, default=3)
 parser.add_argument('--batch_size', type=int, default=1)
-parser.add_argument('--learning_rate', type=float, default=0.001)
+parser.add_argument('--learning_rate', type=float, default=0.0005)
 parser.add_argument('--val_after', type=int, default=50, help='define the number of batches that after training on,'
                                                               'do evaluation')
 
@@ -170,7 +170,8 @@ if __name__ == '__main__':
 
     # plot the losses and save to plot_dir folder
     plot_losses(train_losses, val_losses)
-    losses_figure_name = date_time + '_losses' + '_epochs' + str(epochs) + '_distance' + distance + '.png'
+    losses_figure_name = date_time + '_losses' + '_epochs' + str(epochs) + '_distance' + \
+                         distance + '_lr' + str(args.learning_rate) + '.png'
     losses_figure_path = Path(plots_dir / losses_figure_name)
     plt.savefig(losses_figure_path)
 
@@ -178,6 +179,7 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(average_psnr, label='average PSNR')
     plt.legend(frameon=False)
-    psnr_figure_name = date_time + '_psnr' + '_epochs' + str(epochs) + '_distance' + distance + '.png'
+    psnr_figure_name = date_time + '_psnr' + '_epochs' + str(epochs) + '_distance' + \
+                       distance + '_lr' + str(args.learning_rate) + '.png'
     psnr_figure_path = Path(plots_dir / psnr_figure_name)
     plt.savefig(psnr_figure_path)

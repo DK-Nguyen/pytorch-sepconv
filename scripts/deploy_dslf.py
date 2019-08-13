@@ -104,21 +104,22 @@ def deploying(file_names, model, out_dir):
             apply the model on the first image and second image, save the image with the output name
     """
     print(f'--- Interpolating and writing output images to {out_dir} ---')
-    for key, value in file_names.items():
-        print(f'Round #{key}')
-        with tqdm(total=len(value[0])) as t:
-            for idx, name in enumerate(value[0]):  # loop through the first list
-                # get the proper paths
-                first_im_path = Path(out_dir / name)
-                sec_im_path = Path(out_dir / value[1][idx])
-                out_im_path = Path(out_dir / value[2][idx])
-                # print(f'Interpolating between {first_im_path} and {sec_im_path}')
-                # read the images into 4-D Tensors and do the interpolation
-                deploying = DeployDslfDataset(first_im_path, sec_im_path)
-                deploying.run_model(model, out_im_path)
-                # print(f'Writing the interpolated image to {out_im_path}')
-                t.update()
-        print()
+    with torch.no_grad():
+        for key, value in file_names.items():
+            print(f'Round #{key}')
+            with tqdm(total=len(value[0])) as t:
+                for idx, name in enumerate(value[0]):  # loop through the first list
+                    # get the proper paths
+                    first_im_path = Path(out_dir / name)
+                    sec_im_path = Path(out_dir / value[1][idx])
+                    out_im_path = Path(out_dir / value[2][idx])
+                    # print(f'Interpolating between {first_im_path} and {sec_im_path}')
+                    # read the images into 4-D Tensors and do the interpolation
+                    deploying = DeployDslfDataset(first_im_path, sec_im_path)
+                    deploying.run_model(model, out_im_path)
+                    # print(f'Writing the interpolated image to {out_im_path}')
+                    t.update()
+            print()
 
 
 def psnr_folders(test_dir, out_dir):
@@ -167,9 +168,9 @@ if __name__ == '__main__':
     interpolate_time = end - start
 
     min_psnr, mean_psnr_ycbcr = psnr_folders(test_dir, out_dir)
-    save_csv(log_file_path, weight_name = weight_path.name, dataset = test_dir.name,
-                            distance = args.distance, interpolate_time = f'{interpolate_time:.2f}s',
-                            min_psnr = f'{min_psnr:.2f}', mean_psnr_ycbcr = f'{mean_psnr_ycbcr:.2f}')
+    save_csv(log_file_path, weight_name=weight_path.name, dataset=test_dir.name,
+             distance=args.distance, interpolate_time=f'{interpolate_time:.2f}s',
+             min_psnr=f'{min_psnr:.2f}', mean_psnr_ycbcr=f'{mean_psnr_ycbcr:.2f}')
 
     print(f'--- Done. Time to Interpolate {test_dir.name} with distance {args.distance}: '
           f'{interpolate_time :.2f}s  ---')
