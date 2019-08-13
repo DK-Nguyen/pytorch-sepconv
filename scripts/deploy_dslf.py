@@ -24,17 +24,17 @@ from utils.data_handler import DeployDslfDataset
 
 parser = argparse.ArgumentParser(description='Deploying SepConv Pretrained Model on DSLF Dataset')
 
-parser.add_argument('--test_dir', type=str, default='data/dslf/test/icme3', help='directory that'
+parser.add_argument('--test_dir', type=str, default='data/dslf/test/icme1', help='directory that'
                                                                                  'contains input images')
 parser.add_argument('--output_dir', type=str, default='outputs/output_deploy_dslf', help='directory that'
                                                                                     'contains output images')
 parser.add_argument('--weight_path', type=str, default='weights/deploy_weights/'
-                                                       'distance08_fineTuneL1.pytorch')
+                                            'epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch')
 parser.add_argument('--log_dir', type=str, default='log_files/log_deploy', help='directory to output csv file that '
                                                                             'contains info like time consumed, psnr')
 parser.add_argument('--mode', type=str, choices=['multiple', 'one'], default='multiple',
                     help='deploy on multiple images or one image, remember to change the in and out directory')
-parser.add_argument('--distance', type=int, default=32, help='distance is only used when "mode" is "multiple"')
+parser.add_argument('--distance', type=int, default=4, help='distance is only used when "mode" is "multiple"')
 parser.add_argument('--image_extension', type=str, default='.png', help='extension of the images to deploy')
 
 args = parser.parse_args()
@@ -104,22 +104,21 @@ def deploying(file_names, model, out_dir):
             apply the model on the first image and second image, save the image with the output name
     """
     print(f'--- Interpolating and writing output images to {out_dir} ---')
-    with torch.no_grad():
-        for key, value in file_names.items():
-            print(f'Round #{key}')
-            with tqdm(total=len(value[0])) as t:
-                for idx, name in enumerate(value[0]):  # loop through the first list
-                    # get the proper paths
-                    first_im_path = Path(out_dir / name)
-                    sec_im_path = Path(out_dir / value[1][idx])
-                    out_im_path = Path(out_dir / value[2][idx])
-                    # print(f'Interpolating between {first_im_path} and {sec_im_path}')
-                    # read the images into 4-D Tensors and do the interpolation
-                    deploying = DeployDslfDataset(first_im_path, sec_im_path)
-                    deploying.run_model(model, out_im_path)
-                    # print(f'Writing the interpolated image to {out_im_path}')
-                    t.update()
-            print()
+    for key, value in file_names.items():
+        print(f'Round #{key}')
+        with tqdm(total=len(value[0])) as t:
+            for idx, name in enumerate(value[0]):  # loop through the first list
+                # get the proper paths
+                first_im_path = Path(out_dir / name)
+                sec_im_path = Path(out_dir / value[1][idx])
+                out_im_path = Path(out_dir / value[2][idx])
+                # print(f'Interpolating between {first_im_path} and {sec_im_path}')
+                # read the images into 4-D Tensors and do the interpolation
+                deploying = DeployDslfDataset(first_im_path, sec_im_path)
+                deploying.run_model(model, out_im_path)
+                # print(f'Writing the interpolated image to {out_im_path}')
+                t.update()
+        print()
 
 
 def psnr_folders(test_dir, out_dir):
