@@ -4,7 +4,6 @@ load the pretrained_weights from the directory specified by --load_model, do the
 (fine tune the pretrained weights on the last part of the network - the subnet_kernel) on the train and val
 folder, then save the weights to the folder specified by --save_weights.
 The output images will be saved to the --out_dir folder.
-TODO: make the class Params that takes hyper parameters from JSON files in the experiments folder
 TODO: print log file after each run of transfer learning, deploying ...
 """
 
@@ -36,14 +35,6 @@ parser.add_argument('--save_plots', type=str, default='images', help='the folder
 parser.add_argument('--params_path', type=str, default='experiments/params1/params1.json',
                     help='the path to the json file that contains the hyper-parameters')
 
-parser.add_argument('--image_extension', type=str, default='.png', help='extension of the images to train')
-parser.add_argument('--kernel', type=int, default=51)
-parser.add_argument('--epochs', type=int, default=3)
-parser.add_argument('--batch_size', type=int, default=1)
-parser.add_argument('--learning_rate', type=float, default=0.0005)
-parser.add_argument('--val_after', type=int, default=50,
-                    help='define the number of batches that after training on, do evaluation')
-
 args = parser.parse_args()
 
 # make the paths from args parser
@@ -59,7 +50,6 @@ output_weights_dir = Path(project_dir/args.save_weights)
 # params path
 params_path = Path(project_dir / args.params_path)
 params = Param(params_path)
-
 # other params
 kernel = params.kernel
 epochs = params.epochs

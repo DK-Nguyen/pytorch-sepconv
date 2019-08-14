@@ -31,7 +31,7 @@ There are also scripts for deploying the model on images depending on situations
 * `\data`: contains the folders of images to deploy the model on.  
 * `\images`: containts images in `README.md` and plots of results after doing transfer learning.  
 * `\model`: contains the code for the network architecture.  
-* `\scripts`: contains the code for transfer learning (fine-tuning the pretrained weights on new data - `transfer_learning.py`), deploying the model on images taken from the cameras rig (`deploy_camera_rig.py`) or a folder of densly sampled images (`deploy_dslf.py`).  
+* `\src`: contains the code for transfer learning (fine-tuning the pretrained weights on new data - `transfer_learning.py`), deploying the model on images taken from the cameras rig (`deploy_camera_rig.py`) or a folder of densly sampled images (`deploy_dslf.py`).  
 * `\utils`: contains the helper functionalities for the project.  
 * `\weights`: contains the pretrained weights (after being split) and also the fine-tuned weights.
 
@@ -58,7 +58,7 @@ optional arguments:
 ### How to run
 #### `deploy_dslf.py`
 ```
-cd ./scripts/;
+cd ./src/;
 deploy_dslf.py.py [--test_dir TEST_DIR] [--output_dir OUTPUT_DIR]
                   [--weight_path WEIGHT_PATH] [--log_dir LOG_DIR] 
                   [--mode MODE] [--distance DISTANCE] 
@@ -76,7 +76,7 @@ After preparing the folder of images *'0001.png'*, *'0002.png'*..., you can run 
 
 #### `deploy_camera_rig.py`
 ```
-cd ./scripts/;
+cd ./src/;
 deploy_camera_rig.py.py [--data_dir DATA_DIR] [--output_dir OUTPUT_DIR]
                         [--weight_path WEIGHT_PATH] [--log_dir LOG_DIR] 
                         [--mode MODE] [--distance DISTANCE] 
@@ -93,7 +93,7 @@ optional arguments:
 
 #### `transfer_learning.py`
 ```
-cd ./scripts/;
+cd ./src/;
 transfer_learning.py.py [--train_dir TRAIN_DIR] [--val_dir VAL_DIR]
                         [--out_dir OUT_DIR] [--load_model LOAD_MODEL] 
                         [--save_weights SAVE_WEIGHTS] [--save_plots SAVE_PLOTS] 
