@@ -8,7 +8,7 @@ import cv2
 import csv
 from pathlib import Path
 import json
-
+import logging
 
 def to_cuda(x):
     if torch.cuda.is_available():
@@ -282,6 +282,24 @@ class Param:
     def dict(self):
         """Gives dict-like access to Params instance by `params.dict['learning_rate']"""
         return self.__dict__
+
+
+def set_logger(log_path):
+    """
+    Logging useful information, also save them into logger files
+    :param log_path: the path to save the logging info to
+    """
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    if not logger.handlers:
+        # Logging to a file
+        file_handler = logging.FileHandler(log_path)
+        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        logger.addHandler(file_handler)
+        # Logging to console
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(logging.Formatter('%(message)s'))
+        logger.addHandler(stream_handler)
 
 
 if __name__ == '__main__':

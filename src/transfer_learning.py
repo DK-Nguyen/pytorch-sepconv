@@ -4,7 +4,6 @@ load the pretrained_weights from the directory specified by --load_model, do the
 (fine tune the pretrained weights on the last part of the network - the subnet_kernel) on the train and val
 folder, then save the weights to the folder specified by --save_weights.
 The output images will be saved to the --out_dir folder.
-TODO: print log file after each run of transfer learning, deploying ...
 """
 
 import torch
@@ -17,9 +16,10 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 from datetime import datetime
 import numpy as np
+import logging
 
 from model.model import SepConvNet
-from utils.helpers import to_cuda, imwrite, plot_losses, psnr, Param
+from utils.helpers import to_cuda, imwrite, plot_losses, psnr, Param, set_logger
 from utils.data_handler import InterpolationDataset
 
 
@@ -30,10 +30,12 @@ parser.add_argument('--val_dir', type=str, default='data/dslf/val_16')
 parser.add_argument('--out_dir', type=str, default='outputs/output_transfer_learning')
 parser.add_argument('--load_model', type=str, default='weights/sepconv_weights')
 parser.add_argument('--save_weights', type=str, default='weights/transfer_learning_weights')
-parser.add_argument('--save_plots', type=str, default='images', help='the folder to save loss and '
-                                                                     'psnr plots to.')
+parser.add_argument('--save_plots', type=str, default='images',
+                    help='the folder to save loss and psnr plots to.')
 parser.add_argument('--params_path', type=str, default='experiments/params1/params1.json',
                     help='the path to the json file that contains the hyper-parameters')
+parser.add_argument('--log_dir', type=str, default='log_files/long_transfer_learning',
+                    help='the directory that contains log files of transfer learning')
 
 args = parser.parse_args()
 
@@ -50,6 +52,8 @@ output_weights_dir = Path(project_dir/args.save_weights)
 # params path
 params_path = Path(project_dir / args.params_path)
 params = Param(params_path)
+# log path
+log_path = Path(project_dir / args.log_dir / 'transfer_learning.log')
 # other params
 kernel = params.kernel
 epochs = params.epochs
@@ -73,6 +77,12 @@ def train_and_evaluate():
     """
     Train and Evaluate the model
     """
+    # get the logger
+    set_logger(log_path)
+    logging.info('---Start Transfer Learning---')
+    logging.info(f'Train data directory: {args.train_dir}')
+    logging.info(f'Validation data directory: {args.val_dir}')
+
     # load the model and the weights (for each part)
     model = to_cuda(SepConvNet(kernel))
     model.features.load_state_dict(torch.load(features_weight_path))
@@ -88,14 +98,22 @@ def train_and_evaluate():
     for param in model.features.parameters():
         param.requires_grad = False
 
-    optimizer = optim.Adam(params=model.subnet_kernel.parameters(), lr=params.learning_rate)  # fine-tune the subnet_kernels part
+    # fine-tune the subnet_kernels part
+    optimizer = optim.Adam(params=model.subnet_kernel.parameters(), lr=params.learning_rate)
     criterion = nn.MSELoss()
     running_loss = 0
     train_losses, val_losses, average_psnr = [], [], []
 
+    # logging the hyperparameters
+    logging.info(f'learning rate: {params.learning_rate}, '
+                 f'kernel_size: {params.kernel_size}, '
+                 f'epochs: {params.epochs}, '
+                 f'batch_size: {params.batch_size}, '
+                 f'val_after: {params.val_after} epochs')
+
     # training
     for epoch in range(epochs):
-        print(f'|Training|, Epoch {epoch+1}/{epochs}')
+        logging.info(f'|Training|, Epoch {epoch+1}/{epochs}')
         model.train()
         steps = 0
 
@@ -135,11 +153,11 @@ def train_and_evaluate():
                                 output_path = (out_epoch_dir / name).as_posix()
                                 imwrite(val_frame_out[index], output_path)
 
-                    print(f"Epoch {epoch + 1}/{epochs}.. "
-                          f"Step {steps}.. "
-                          f"Train loss: {running_loss / params.val_after:.3f}.. "
-                          f"Val loss: {val_loss / len(val_loader):.3f}.. "
-                          f"Average PSNR: {np.mean(avg_psnr):.3f}")
+                    logging.info(f"Epoch {epoch + 1}/{epochs}.. "
+                                 f"Step {steps}.. "
+                                 f"Train loss: {running_loss / params.val_after :.3f}.. "
+                                 f"Val loss: {val_loss / len(val_loader):.3f}.. "
+                                 f"Average PSNR: {np.mean(avg_psnr):.3f}")
 
                     train_losses.append(running_loss / params.val_after)
                     val_losses.append(val_loss / len(val_loader))
@@ -153,7 +171,8 @@ def train_and_evaluate():
         # save the model state dict after each epoch
         state_dict_path = state_dict_dir / ('epoch' + str(epoch+1).zfill(3)
                                             + '-batch_size' + str(batch_size) + '.pytorch')
-        print(f'Saving the model to {state_dict_path}...')
+        logging.info(f'Saving the model to {state_dict_path}...')
+
         torch.save({'epoch': epoch,
                     'model_state_dict': model.state_dict(),
                     'kernel_size': kernel,
