@@ -5,6 +5,7 @@ load the pretrained_weights from the directory specified by --load_model, do the
 folder, then save the weights to the folder specified by --save_weights.
 The output images will be saved to the --out_dir folder.
 TODO: make the class Params that takes hyper parameters from JSON files in the experiments folder
+TODO: print log file after each run of transfer learning, deploying ...
 """
 
 import torch
@@ -16,9 +17,10 @@ import argparse
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 from datetime import datetime
+import numpy as np
 
 from model.model import SepConvNet
-from utils.helpers import to_cuda, imwrite, plot_losses, psnr
+from utils.helpers import to_cuda, imwrite, plot_losses, psnr, Param
 from utils.data_handler import InterpolationDataset
 
 
@@ -31,13 +33,16 @@ parser.add_argument('--load_model', type=str, default='weights/sepconv_weights')
 parser.add_argument('--save_weights', type=str, default='weights/transfer_learning_weights')
 parser.add_argument('--save_plots', type=str, default='images', help='the folder to save loss and '
                                                                      'psnr plots to.')
+parser.add_argument('--params_path', type=str, default='experiments/params1/params1.json',
+                    help='the path to the json file that contains the hyper-parameters')
+
 parser.add_argument('--image_extension', type=str, default='.png', help='extension of the images to train')
 parser.add_argument('--kernel', type=int, default=51)
 parser.add_argument('--epochs', type=int, default=3)
 parser.add_argument('--batch_size', type=int, default=1)
 parser.add_argument('--learning_rate', type=float, default=0.0005)
-parser.add_argument('--val_after', type=int, default=50, help='define the number of batches that after training on,'
-                                                              'do evaluation')
+parser.add_argument('--val_after', type=int, default=50,
+                    help='define the number of batches that after training on, do evaluation')
 
 args = parser.parse_args()
 
@@ -51,10 +56,14 @@ plots_dir = Path(project_dir/args.save_plots)
 features_weight_path = Path(project_dir/args.load_model/'features-l1.pytorch')
 kernels_weight_path = Path(project_dir/args.load_model/'kernels-l1.pytorch')
 output_weights_dir = Path(project_dir/args.save_weights)
+# params path
+params_path = Path(project_dir / args.params_path)
+params = Param(params_path)
+
 # other params
-kernel = args.kernel
-epochs = args.epochs
-batch_size = args.batch_size
+kernel = params.kernel
+epochs = params.epochs
+batch_size = params.batch_size
 
 # make the folders to save weights and outputs images, and also the images for loss & psnr plots
 distance = train_dataset_dir.stem.split('_')[1]
@@ -80,7 +89,7 @@ def train_and_evaluate():
     model.subnet_kernel.load_state_dict(torch.load(kernels_weight_path))
 
     # get the dataset and data loader
-    train_dataset = InterpolationDataset(train_dataset_dir, im_extension=args.image_extension)
+    train_dataset = InterpolationDataset(train_dataset_dir, im_extension=params.image_extension)
     train_loader = DataLoader(train_dataset, batch_size=batch_size)
     val_dataset = InterpolationDataset(val_dataset_dir)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
@@ -89,7 +98,7 @@ def train_and_evaluate():
     for param in model.features.parameters():
         param.requires_grad = False
 
-    optimizer = optim.Adam(params=model.subnet_kernel.parameters(), lr=args.learning_rate)  # fine-tune the subnet_kernels part
+    optimizer = optim.Adam(params=model.subnet_kernel.parameters(), lr=params.learning_rate)  # fine-tune the subnet_kernels part
     criterion = nn.MSELoss()
     running_loss = 0
     train_losses, val_losses, average_psnr = [], [], []
@@ -117,10 +126,10 @@ def train_and_evaluate():
                 running_loss += loss.item()
 
                 # evaluation
-                if steps % args.val_after == 0:
+                if steps % params.val_after == 0:
                     print(' |Evaluating| ', end=' ')
                     val_loss = 0
-                    avg_psnr = 0
+                    avg_psnr = []
                     model.eval()
                     with torch.no_grad():
                         for val_first_frame, val_gt_frame, val_sec_frame, val_gt_names in val_loader:
@@ -130,7 +139,7 @@ def train_and_evaluate():
 
                             # calculate accuracy (peak signal to noise ratio)
                             psnr_err = psnr(val_gt_frame, val_frame_out)
-                            avg_psnr += psnr_err
+                            avg_psnr.append(psnr_err)
                             # write the files into output folder
                             for index, name in enumerate(val_gt_names):
                                 output_path = (out_epoch_dir / name).as_posix()
@@ -138,11 +147,11 @@ def train_and_evaluate():
 
                     print(f"Epoch {epoch + 1}/{epochs}.. "
                           f"Step {steps}.. "
-                          f"Train loss: {running_loss / args.val_after:.3f}.. "
+                          f"Train loss: {running_loss / params.val_after:.3f}.. "
                           f"Val loss: {val_loss / len(val_loader):.3f}.. "
-                          f"Average PSNR: {avg_psnr / len(val_loader):.3f}")
+                          f"Average PSNR: {np.mean(avg_psnr):.3f}")
 
-                    train_losses.append(running_loss / args.val_after)
+                    train_losses.append(running_loss / params.val_after)
                     val_losses.append(val_loss / len(val_loader))
                     average_psnr.append(avg_psnr / len(val_loader))
 
@@ -171,7 +180,7 @@ if __name__ == '__main__':
     # plot the losses and save to plot_dir folder
     plot_losses(train_losses, val_losses)
     losses_figure_name = date_time + '_losses' + '_epochs' + str(epochs) + '_distance' + \
-                         distance + '_lr' + str(args.learning_rate) + '.png'
+                         distance + '_lr' + str(params.learning_rate) + '.png'
     losses_figure_path = Path(plots_dir / losses_figure_name)
     plt.savefig(losses_figure_path)
 
@@ -180,6 +189,6 @@ if __name__ == '__main__':
     plt.plot(average_psnr, label='average PSNR')
     plt.legend(frameon=False)
     psnr_figure_name = date_time + '_psnr' + '_epochs' + str(epochs) + '_distance' + \
-                       distance + '_lr' + str(args.learning_rate) + '.png'
+                       distance + '_lr' + str(params.learning_rate) + '.png'
     psnr_figure_path = Path(plots_dir / psnr_figure_name)
     plt.savefig(psnr_figure_path)

@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 import cv2
 import csv
 from pathlib import Path
+import json
 
 
 def to_cuda(x):
@@ -251,6 +252,36 @@ def save_csv(save_to, **kwargs):
         writer = csv.DictWriter(csv_file, fieldnames=kwargs.keys())
         writer.writeheader()
         writer.writerow(dict(kwargs))
+
+
+class Param:
+    """
+    Class that reads hyper-parameters from a json file
+
+    Example:
+    params = Param(json_path)
+    print(params.learning_rate)
+    >> params.learning_rate = 0.0005
+    """
+    def __init__(self, json_path):
+        with open(json_path) as f:
+            params =json.load(f)
+            self.__dict__.update(params)
+
+    def save(self, json_path):
+        with open(json_path, 'w') as f:
+            json.dump(self.__dict__, f, indent=4)
+
+    def update(self, json_path):
+        """Loads parameters from json file"""
+        with open(json_path) as f:
+            params = json.load(f)
+            self.__dict__.update(params)
+
+    @property
+    def dict(self):
+        """Gives dict-like access to Params instance by `params.dict['learning_rate']"""
+        return self.__dict__
 
 
 if __name__ == '__main__':
