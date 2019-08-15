@@ -67,7 +67,7 @@ deploy_dslf.py.py [--test_dir TEST_DIR] [--output_dir OUTPUT_DIR]
                   [--image_extension IMAGE_EXTENSION] 
 
 optional arguments:
-    --test_dir TEST_DIR         path to directory that contains input images
+    --test_dir TEST_DIR         path to the directory that contains input images
     --output_dir                path to the output directory
     --weight_path WEIGHT_PATH   path to directory that contains the pretrained-weight
     --log_path LOG_PATH         path to the log file that contains information for deploying dslf (time, number of images...)
@@ -86,7 +86,7 @@ deploy_camera_rig.py.py [--data_dir DATA_DIR] [--output_dir OUTPUT_DIR]
                         [--image_extension IMAGE_EXTENSION]
 
 optional arguments:
-    --test_dir TEST_DIR         path to directory that contains the input images folders
+    --test_dir TEST_DIR         path to the directory that contains the input images folders
     --output_dir                path to the directory that contains the output images
     --weight_path WEIGHT_PATH   path to the pretrained-weight
     --num_output NUM_OUTPUT     the number of desired interpolated images
