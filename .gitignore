@@ -4,6 +4,6 @@ __pycache__/
 outputs/*
 data/*
 !data/dslf/data_prepare.py
-log_files/
 weights/transfer_learning_weights
 notebooks/
+experiments/dummy_network.py

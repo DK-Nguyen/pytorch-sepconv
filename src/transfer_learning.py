@@ -25,17 +25,22 @@ from utils.data_handler import InterpolationDataset
 
 parser = argparse.ArgumentParser(description='SepConv Pytorch')
 # params
-parser.add_argument('--train_dir', type=str, default='data/dslf/train_16')
-parser.add_argument('--val_dir', type=str, default='data/dslf/val_16')
-parser.add_argument('--out_dir', type=str, default='outputs/output_transfer_learning')
-parser.add_argument('--load_model', type=str, default='weights/sepconv_weights')
-parser.add_argument('--save_weights', type=str, default='weights/transfer_learning_weights')
+parser.add_argument('--train_dir', type=str, default='data/dslf/train_16',
+                    help='the folder that contains training images')
+parser.add_argument('--val_dir', type=str, default='data/dslf/val_16',
+                    help='the folder that contains validation images')
+parser.add_argument('--out_dir', type=str, default='outputs/output_transfer_learning',
+                    help='the output foler that contains images of the learning process')
+parser.add_argument('--load_model', type=str, default='weights/sepconv_weights',
+                    help='the folder that contains the pretrained weights for us to do transfer learning on')
+parser.add_argument('--save_weights', type=str, default='weights/transfer_learning_weights',
+                    help='the folder to save the fine-tuned weights to')
 parser.add_argument('--save_plots', type=str, default='images',
                     help='the folder to save loss and psnr plots to.')
-parser.add_argument('--params_path', type=str, default='experiments/params1/params1.json',
+parser.add_argument('--params_path', type=str, default='experiments/params1.json',
                     help='the path to the json file that contains the hyper-parameters')
-parser.add_argument('--log_dir', type=str, default='log_files/long_transfer_learning',
-                    help='the directory that contains log files of transfer learning')
+parser.add_argument('--log_path', type=str, default='log_files/transfer_learning.log',
+                    help='the path to transfer learning log file')
 
 args = parser.parse_args()
 
@@ -53,9 +58,9 @@ output_weights_dir = Path(project_dir/args.save_weights)
 params_path = Path(project_dir / args.params_path)
 params = Param(params_path)
 # log path
-log_path = Path(project_dir / args.log_dir / 'transfer_learning.log')
+log_path = Path(project_dir / args.log_path)
 # other params
-kernel = params.kernel
+kernel = params.kernel_size
 epochs = params.epochs
 batch_size = params.batch_size
 
@@ -82,6 +87,8 @@ def train_and_evaluate():
     logging.info('---Start Transfer Learning---')
     logging.info(f'Train data directory: {args.train_dir}')
     logging.info(f'Validation data directory: {args.val_dir}')
+    logging.info(f'Output images directory: {args.out_dir}')
+    logging.info(f'Log info is saved to: {args.log_path}')
 
     # load the model and the weights (for each part)
     model = to_cuda(SepConvNet(kernel))
@@ -102,7 +109,7 @@ def train_and_evaluate():
     optimizer = optim.Adam(params=model.subnet_kernel.parameters(), lr=params.learning_rate)
     criterion = nn.MSELoss()
     running_loss = 0
-    train_losses, val_losses, average_psnr = [], [], []
+    train_losses, val_losses, average_psnrs = [], [], []
 
     # logging the hyperparameters
     logging.info(f'learning rate: {params.learning_rate}, '
@@ -135,7 +142,6 @@ def train_and_evaluate():
 
                 # evaluation
                 if steps % params.val_after == 0:
-                    print(' |Evaluating| ', end=' ')
                     val_loss = 0
                     avg_psnr = []
                     model.eval()
@@ -148,12 +154,13 @@ def train_and_evaluate():
                             # calculate accuracy (peak signal to noise ratio)
                             psnr_err = psnr(val_gt_frame, val_frame_out)
                             avg_psnr.append(psnr_err)
+
                             # write the files into output folder
                             for index, name in enumerate(val_gt_names):
                                 output_path = (out_epoch_dir / name).as_posix()
                                 imwrite(val_frame_out[index], output_path)
 
-                    logging.info(f"Epoch {epoch + 1}/{epochs}.. "
+                    logging.info(f"--|Evaluating|, Epoch {epoch + 1}/{epochs}.. "
                                  f"Step {steps}.. "
                                  f"Train loss: {running_loss / params.val_after :.3f}.. "
                                  f"Val loss: {val_loss / len(val_loader):.3f}.. "
@@ -161,7 +168,7 @@ def train_and_evaluate():
 
                     train_losses.append(running_loss / params.val_after)
                     val_losses.append(val_loss / len(val_loader))
-                    average_psnr.append(avg_psnr / len(val_loader))
+                    average_psnrs.append(np.mean(avg_psnr))
 
                     running_loss = 0
                     model.train()
@@ -169,23 +176,24 @@ def train_and_evaluate():
                 t.update()
 
         # save the model state dict after each epoch
-        state_dict_path = state_dict_dir / ('epoch' + str(epoch+1).zfill(3)
-                                            + '-batch_size' + str(batch_size) + '.pytorch')
-        logging.info(f'Saving the model to {state_dict_path}...')
+        state_dict_name = ('epoch' + str(epoch+1).zfill(3) + '-batch_size' + str(batch_size) + '.pytorch')
+        state_dict_path = state_dict_dir / state_dict_name
+        logging.info(f'Saving the model to {state_dict_dir.name}/{state_dict_name}...')
 
         torch.save({'epoch': epoch,
                     'model_state_dict': model.state_dict(),
                     'kernel_size': kernel,
                     'train_losses': train_losses,
                     'val_losses': val_losses,
-                    'avg_psnr': average_psnr}, state_dict_path)
+                    'avg_psnr': average_psnrs}, state_dict_path)
 
-    return train_losses, val_losses, average_psnr
+    return train_losses, val_losses, average_psnrs
 
 
 if __name__ == '__main__':
-    train_losses, val_losses, average_psnr = train_and_evaluate()
+    train_losses, val_losses, average_psnrs = train_and_evaluate()
 
+    logging.info(f'Saving the plots to {args.save_plots}')
     # plot the losses and save to plot_dir folder
     plot_losses(train_losses, val_losses)
     losses_figure_name = date_time + '_losses' + '_epochs' + str(epochs) + '_distance' + \
@@ -195,7 +203,7 @@ if __name__ == '__main__':
 
     # plot the psnr and save to plot_dir folder
     plt.figure()
-    plt.plot(average_psnr, label='average PSNR')
+    plt.plot(average_psnrs, label='average PSNR')
     plt.legend(frameon=False)
     psnr_figure_name = date_time + '_psnr' + '_epochs' + str(epochs) + '_distance' + \
                        distance + '_lr' + str(params.learning_rate) + '.png'

@@ -17,24 +17,28 @@ from pathlib import Path
 import torch
 import shutil
 import os
+import logging
 
 from model.model import SepConvNet
-from utils.helpers import to_cuda
+from utils.helpers import to_cuda, set_logger
 from utils.data_handler import DeployCameraRigDataset
 
 
 parser = argparse.ArgumentParser('Deploying SepConv Model on Camera Rig Dataset')
-parser.add_argument('--data_dir', type=str, default='data/camera_rig', help='the directory that contains'
-                                                                            'the image folders')
+parser.add_argument('--data_dir', type=str, default='data/camera_rig',
+                    help='the directory that contains the image folders')
 parser.add_argument('--output_dir', type=str, default='outputs/output_deploy_camera_rig',
                     help='the output dir of the module')
 parser.add_argument('--weight_path', type=str, default='weights/deploy_weights/network-l1',
                     help='the path to the pre-trained weights')
-parser.add_argument('--num_output', type=int, default=3, help='the number of desired interpolated images')
+parser.add_argument('--num_output', type=int, default=3,
+                    help='the number of desired interpolated images')
 parser.add_argument('--image_extension', type=str, default='.png',
                     help='the image extension that you want to interpolate')
 parser.add_argument('--resize', nargs=2, type=int, default=[1900, 1200],
                     help='(width, height) of the images to resize to')
+parser.add_argument('--log_path', type=str, default='log_files/deploy_camera_rig.log',
+                    help='the path to the log file that saves necessary information')
 
 args = parser.parse_args()
 
@@ -47,6 +51,7 @@ if not Path(project_dir / args.output_dir).exists():
     Path(project_dir / args.output_dir).mkdir()
 output_dir = Path(project_dir / args.output_dir / date_time)
 weight_path = Path(project_dir / args.weight_path)
+log_path = Path(project_dir / args.log_path)
 
 
 def prepare_output_dir(data_dir, output_dir):
@@ -91,8 +96,6 @@ def interpolating(output_dir, resize=None):
     """
     model = get_model(weight_path)
     if args.num_output == 3:
-        print(f'Doing interpolation on {args.data_dir}, '
-              f'number of interpolated images for a pair of input: {args.num_output}')
         for position in sorted(os.listdir(output_dir)):
             position_path = Path(output_dir / position)
             print(f'Interpolating {position}')
@@ -116,8 +119,14 @@ def interpolating(output_dir, resize=None):
 
 
 if __name__ == '__main__':
+    set_logger(log_path)
+    logging.info(f'--- Start deploying on the dataset {args.data_dir} ---')
+    logging.info(f'Output Dir: {args.output_dir}')
+    logging.info(f'weight used: {args.weight_path}')
+    logging.info(f'number of output for a pair of images: {args.num_output}')
+
     start = time.time()
     prepare_output_dir(data_dir, output_dir)
     interpolating(output_dir, resize=None)  # resize can be None or tuple(args.resize)
     end = time.time()
-    print(f'Execution time: {end - start :.2f}s')
+    logging.info(f'--- Done. Execution time: {end - start :.2f}s ---')

@@ -10,6 +10,7 @@ from pathlib import Path
 import json
 import logging
 
+
 def to_cuda(x):
     if torch.cuda.is_available():
         x = x.cuda()

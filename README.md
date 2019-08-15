@@ -29,11 +29,13 @@ There are also scripts for deploying the model on images depending on situations
 
 ### Project Structure
 * `\data`: contains the folders of images to deploy the model on.  
-* `\images`: containts images in `README.md` and plots of results after doing transfer learning.  
-* `\model`: contains the code for the network architecture.  
+* `\experiments`: contains the .json files of hyper-parameters for transfer learning.  
+* `\images`: contains images in `README.md` and the plots of results after doing transfer learning.    
+* `\log_files`: contains the log files for transfer learning and deploying. 
+* `\model`: contains the code of the neural network architecture.  
 * `\src`: contains the code for transfer learning (fine-tuning the pretrained weights on new data - `transfer_learning.py`), deploying the model on images taken from the cameras rig (`deploy_camera_rig.py`) or a folder of densly sampled images (`deploy_dslf.py`).  
-* `\utils`: contains the helper functionalities for the project.  
-* `\weights`: contains the pretrained weights (after being split) and also the fine-tuned weights.
+* `\utils`: contains the helper functions.  
+* `\weights`: contains the pre-trained weights (after being split) and also the fine-tuned weights.
 
 ### Dataset
 To run `deploy_dslf.py`, you need to prepare the folder of images with names like *'0001.png'*, *'0002.png'*... in the `\data` directory.  
@@ -60,7 +62,7 @@ optional arguments:
 ```
 cd ./src/;
 deploy_dslf.py.py [--test_dir TEST_DIR] [--output_dir OUTPUT_DIR]
-                  [--weight_path WEIGHT_PATH] [--log_dir LOG_DIR] 
+                  [--weight_path WEIGHT_PATH] [--log_path LOG_PATH] 
                   [--mode MODE] [--distance DISTANCE] 
                   [--image_extension IMAGE_EXTENSION] 
 
@@ -68,6 +70,7 @@ optional arguments:
     --test_dir TEST_DIR         path to directory that contains input images
     --output_dir                path to the output directory
     --weight_path WEIGHT_PATH   path to directory that contains the pretrained-weight
+    --log_path LOG_PATH         path to the log file that contains information for deploying dslf (time, number of images...)
     --mode MODE                 choose between 'multiple' to deploy on multiple images (default), or 'one' to deploy on just 1 pair of images
     --distance DISTANCE         the distance between 2 images in an input pair. If distance is 4, then interpolate between image '0001.png' and '0005.png'
     --image_extension           the extension of the images in the input folder (default: '.png')
@@ -78,9 +81,9 @@ After preparing the folder of images *'0001.png'*, *'0002.png'*..., you can run 
 ```
 cd ./src/;
 deploy_camera_rig.py.py [--data_dir DATA_DIR] [--output_dir OUTPUT_DIR]
-                        [--weight_path WEIGHT_PATH] [--log_dir LOG_DIR] 
-                        [--mode MODE] [--distance DISTANCE] 
-                        [--image_extension IMAGE_EXTENSION] 
+                        [--weight_path WEIGHT_PATH] [--log_dir LOG_DIR]
+                        [--mode MODE] [--distance DISTANCE]
+                        [--image_extension IMAGE_EXTENSION]
 
 optional arguments:
     --test_dir TEST_DIR         path to directory that contains input images folders
@@ -97,19 +100,16 @@ cd ./src/;
 transfer_learning.py.py [--train_dir TRAIN_DIR] [--val_dir VAL_DIR]
                         [--out_dir OUT_DIR] [--load_model LOAD_MODEL] 
                         [--save_weights SAVE_WEIGHTS] [--save_plots SAVE_PLOTS] 
-                        [--image_extension IMAGE_EXTENSION] [--kernel] KERNEL
-                        [--epochs EPOCHS] [--batch_size BATCH_SIZE]
-
+                        [--params_path PARAMS_PATH] [--log_path LOG_PATH] 
 optional arguments:
-    --train_dir TRAIN_DIR               path to directory that contains images for training
-    --val_dir VAL_DIR                   path to the directory that contains images for validation
+    --train_dir TRAIN_DIR               path to directory that contains training images
+    --val_dir VAL_DIR                   path to the directory that contains validation images
     --out_dir OUT_DIR                   path to the directory that contains output images
-    --load_model LOAD_MODEL             path to the pretrained-weights that we want to fine-tune
+    --load_model LOAD_MODEL             path to the pretrained-weights that you want to fine-tune
     --save_weights SAVE_WEIGHTS         path to the folder to save the fine-tuned weights to
     --save_plots SAVE_PLOTS             path to the folder to save loss and psnr plots
-    --image_extension IMAGE_EXTENSION   the image extension of the training images (default: '.png')
-    --kernel KERNEL                     the size of the sep_conv kernel (default: 51)
-    --epochs EPOCHS                     the number of epochs for transfer learning
+    --params_path PARAMS_PATH           path to the json file that contains the hyper-parameters, by default is in the \experiments folder
+    --log_path LOG_PATH                 path to the .log file that saves necessary information
 ```
 
 

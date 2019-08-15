@@ -1,0 +1,5 @@
+2019-08-15 12:22:38,363 - INFO - --- Start deploying on the dataset data/camera_rig ---
+2019-08-15 12:22:38,363 - INFO - Output Dir: outputs/output_deploy_camera_rig
+2019-08-15 12:22:38,363 - INFO - weight used: weights/deploy_weights/network-l1
+2019-08-15 12:22:38,363 - INFO - number of output for a pair of images: 3
+2019-08-15 12:26:10,039 - INFO - --- Done. Execution time: 211.68s ---
