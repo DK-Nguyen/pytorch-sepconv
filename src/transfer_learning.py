@@ -37,7 +37,7 @@ parser.add_argument('--save_weights', type=str, default='weights/transfer_learni
                     help='the folder to save the fine-tuned weights to')
 parser.add_argument('--save_plots', type=str, default='images',
                     help='the folder to save loss and psnr plots to.')
-parser.add_argument('--params_path', type=str, default='experiments/params1.json',
+parser.add_argument('--params_path', type=str, default='experiments/params2.json',
                     help='the path to the json file that contains the hyper-parameters')
 parser.add_argument('--log_path', type=str, default='log_files/transfer_learning.log',
                     help='the path to transfer learning log file')
@@ -160,7 +160,7 @@ def train_and_evaluate():
                                 output_path = (out_epoch_dir / name).as_posix()
                                 imwrite(val_frame_out[index], output_path)
 
-                    logging.info(f"--|Evaluating|, Epoch {epoch + 1}/{epochs}.. "
+                    logging.info(f"  |Evaluating|, Epoch {epoch + 1}/{epochs}.. "
                                  f"Step {steps}.. "
                                  f"Train loss: {running_loss / params.val_after :.5f}.. "
                                  f"Val loss: {val_loss / len(val_loader):.5f}.. "

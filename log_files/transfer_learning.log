@@ -39,4 +39,39 @@
 2019-08-15 14:43:10,862 - INFO - Log info is saved to: log_files/transfer_learning.log
 2019-08-15 14:43:13,435 - INFO - learning rate: 0.0005, kernel_size: 51, epochs: 3, batch_size: 1, val_after: 50 epochs
 2019-08-15 14:43:13,435 - INFO - |Training|, Epoch 1/3
-2019-08-15 14:44:47,632 - INFO - --|Evaluating|, Epoch 1/3.. Step 50.. Train loss: 0.00042.. Val loss: 0.00037.. Average PSNR: 83.173
+2019-08-15 14:44:47,632 - INFO -   |Evaluating|, Epoch 1/3.. Step 50.. Train loss: 0.00042.. Val loss: 0.00037.. Average PSNR: 83.173
+2019-08-15 14:46:21,614 - INFO -   |Evaluating|, Epoch 1/3.. Step 100.. Train loss: 0.00022.. Val loss: 0.00038.. Average PSNR: 83.251
+2019-08-15 14:47:54,517 - INFO -   |Evaluating|, Epoch 1/3.. Step 150.. Train loss: 0.00047.. Val loss: 0.00024.. Average PSNR: 85.441
+2019-08-15 14:49:27,607 - INFO -   |Evaluating|, Epoch 1/3.. Step 200.. Train loss: 0.00047.. Val loss: 0.00021.. Average PSNR: 86.010
+2019-08-15 14:51:00,153 - INFO -   |Evaluating|, Epoch 1/3.. Step 250.. Train loss: 0.00045.. Val loss: 0.00021.. Average PSNR: 86.412
+2019-08-15 14:52:33,326 - INFO -   |Evaluating|, Epoch 1/3.. Step 300.. Train loss: 0.00004.. Val loss: 0.00020.. Average PSNR: 86.662
+2019-08-15 14:54:06,777 - INFO -   |Evaluating|, Epoch 1/3.. Step 350.. Train loss: 0.00004.. Val loss: 0.00020.. Average PSNR: 86.711
+2019-08-15 14:54:21,061 - INFO - Saving the model to 08.15.2019_14-43-10_distance16/epoch001-batch_size1.pytorch...
+2019-08-15 14:54:21,137 - INFO - |Training|, Epoch 2/3
+2019-08-15 14:55:54,304 - INFO -   |Evaluating|, Epoch 2/3.. Step 50.. Train loss: 0.00024.. Val loss: 0.00022.. Average PSNR: 85.481
+2019-08-15 14:57:28,983 - INFO -   |Evaluating|, Epoch 2/3.. Step 100.. Train loss: 0.00020.. Val loss: 0.00023.. Average PSNR: 85.558
+2019-08-15 14:59:02,482 - INFO -   |Evaluating|, Epoch 2/3.. Step 150.. Train loss: 0.00039.. Val loss: 0.00020.. Average PSNR: 86.463
+2019-08-15 15:00:35,087 - INFO -   |Evaluating|, Epoch 2/3.. Step 200.. Train loss: 0.00045.. Val loss: 0.00023.. Average PSNR: 86.001
+2019-08-15 15:02:08,111 - INFO -   |Evaluating|, Epoch 2/3.. Step 250.. Train loss: 0.00044.. Val loss: 0.00022.. Average PSNR: 85.855
+2019-08-15 15:03:41,330 - INFO -   |Evaluating|, Epoch 2/3.. Step 300.. Train loss: 0.00004.. Val loss: 0.00021.. Average PSNR: 86.526
+2019-08-15 15:05:14,633 - INFO -   |Evaluating|, Epoch 2/3.. Step 350.. Train loss: 0.00004.. Val loss: 0.00020.. Average PSNR: 86.637
+2019-08-15 15:05:28,751 - INFO - Saving the model to 08.15.2019_14-43-10_distance16/epoch002-batch_size1.pytorch...
+2019-08-15 15:05:28,830 - INFO - |Training|, Epoch 3/3
+2019-08-15 15:07:03,139 - INFO -   |Evaluating|, Epoch 3/3.. Step 50.. Train loss: 0.00023.. Val loss: 0.00021.. Average PSNR: 85.853
+2019-08-15 15:08:36,935 - INFO -   |Evaluating|, Epoch 3/3.. Step 100.. Train loss: 0.00020.. Val loss: 0.00026.. Average PSNR: 84.647
+2019-08-15 15:10:11,139 - INFO -   |Evaluating|, Epoch 3/3.. Step 150.. Train loss: 0.00038.. Val loss: 0.00020.. Average PSNR: 86.493
+2019-08-15 15:11:45,537 - INFO -   |Evaluating|, Epoch 3/3.. Step 200.. Train loss: 0.00044.. Val loss: 0.00022.. Average PSNR: 86.132
+2019-08-15 15:13:20,223 - INFO -   |Evaluating|, Epoch 3/3.. Step 250.. Train loss: 0.00043.. Val loss: 0.00022.. Average PSNR: 85.847
+2019-08-15 15:14:53,152 - INFO -   |Evaluating|, Epoch 3/3.. Step 300.. Train loss: 0.00004.. Val loss: 0.00020.. Average PSNR: 86.676
+2019-08-15 15:16:24,764 - INFO -   |Evaluating|, Epoch 3/3.. Step 350.. Train loss: 0.00004.. Val loss: 0.00020.. Average PSNR: 86.689
+2019-08-15 15:16:38,655 - INFO - Saving the model to 08.15.2019_14-43-10_distance16/epoch003-batch_size1.pytorch...
+2019-08-15 15:16:38,727 - INFO - Saving the plots to C:\Users\nguyen29\Desktop\pytorch-sepconv-hyeongminLee-dk\images
+2019-08-15 15:46:03,870 - INFO - ---Start Transfer Learning---
+2019-08-15 15:46:03,870 - INFO - Train data directory: data/dslf/train_16
+2019-08-15 15:46:03,870 - INFO - Validation data directory: data/dslf/val_16
+2019-08-15 15:46:03,870 - INFO - Output images directory: outputs/output_transfer_learning
+2019-08-15 15:46:03,870 - INFO - Log info is saved to: log_files/transfer_learning.log
+2019-08-15 15:46:06,377 - INFO - learning rate: 0.001, kernel_size: 51, epochs: 3, batch_size: 1, val_after: 100 epochs
+2019-08-15 15:46:06,377 - INFO - |Training|, Epoch 1/3
+2019-08-15 15:48:16,478 - INFO -   |Evaluating|, Epoch 1/3.. Step 100.. Train loss: 0.00059.. Val loss: 0.00061.. Average PSNR: 81.678
+2019-08-15 15:50:25,497 - INFO -   |Evaluating|, Epoch 1/3.. Step 200.. Train loss: 0.00049.. Val loss: 0.00022.. Average PSNR: 86.079
