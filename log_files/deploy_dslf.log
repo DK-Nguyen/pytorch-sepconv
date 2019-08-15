@@ -32,3 +32,17 @@
 2019-08-15 12:22:14,170 - INFO - Total number of interpolated images: 180 
 2019-08-15 12:22:14,170 - INFO - Time to interpolate data/dslf/test/icme1: 57.74s
 2019-08-15 12:22:14,170 - INFO - --- Done ---
+2019-08-15 13:48:17,645 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-08-15 13:48:17,645 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-08-15 13:48:17,645 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-08-15 13:48:20,195 - INFO - Round #1, number of images to interpolate: 3
+2019-08-15 13:48:22,059 - INFO - Round #2, number of images to interpolate: 6
+2019-08-15 13:48:23,755 - INFO - Round #3, number of images to interpolate: 12
+2019-08-15 13:48:27,120 - INFO - Round #4, number of images to interpolate: 24
+2019-08-15 13:48:33,849 - INFO - Round #5, number of images to interpolate: 48
+2019-08-15 13:48:47,346 - INFO - Round #6, number of images to interpolate: 96
+2019-08-15 13:49:14,348 - INFO - Evaluating the results...
+2019-08-15 13:49:44,322 - INFO - Min PSNR: 27.72. Mean PSNR in YCBCR: 31.72
+2019-08-15 13:49:44,322 - INFO - Total number of interpolated images: 189 
+2019-08-15 13:49:44,322 - INFO - Time to interpolate data/dslf/test/icme2: 56.70s
+2019-08-15 13:49:44,322 - INFO - --- Done ---

@@ -24,19 +24,20 @@ from utils.data_handler import DeployDslfDataset
 
 parser = argparse.ArgumentParser(description='Deploying SepConv Pretrained Model on DSLF Dataset')
 
-parser.add_argument('--test_dir', type=str, default='data/dslf/test/icme1',
-                    help='directory that'
-                                                                                 'contains input images')
-parser.add_argument('--output_dir', type=str, default='outputs/output_deploy_dslf', help='directory that'
-                                                                                    'contains output images')
-parser.add_argument('--weight_path', type=str, default='weights/deploy_weights/'
-                                            'epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch')
+parser.add_argument('--test_dir', type=str, default='data/dslf/test/icme2',
+                    help='directory that contains input images')
+parser.add_argument('--output_dir', type=str, default='outputs/output_deploy_dslf',
+                    help='directory that contains output images')
+parser.add_argument('--weight_path', type=str,
+                    default='weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch')
 parser.add_argument('--log_path', type=str, default='log_files/deploy_dslf.log',
                     help='the path to the log file that contains information for deploying dslf')
 parser.add_argument('--mode', type=str, choices=['multiple', 'one'], default='multiple',
                     help='deploy on multiple images or one image, remember to change the in and out directory')
-parser.add_argument('--distance', type=int, default=16, help='distance is only used when "mode" is "multiple"')
-parser.add_argument('--image_extension', type=str, default='.png', help='extension of the images to deploy')
+parser.add_argument('--distance', type=int, default=64,
+                    help='distance is only used when "mode" is "multiple"')
+parser.add_argument('--image_extension', type=str, default='.png',
+                    help='extension of the images to deploy')
 
 args = parser.parse_args()
 
@@ -153,29 +154,29 @@ def psnr_folders(test_dir, out_dir):
 
 
 if __name__ == '__main__':
+    # get the logger file
     set_logger(log_path)
-    logging.info(f'--- Start Deploying the model on {args.test_dir}, distance {args.distance} ---')
-    logging.info(f'Weight used: {args.weight_path}')
-    logging.info(f'Interpolating and writing output images to {args.output_dir}')
 
-    interpolate_ims = 0
-    start = time.time()
-    model = get_model(weight_path=weight_path)
-    file_names = prepare_output_dir(out_dir=out_dir, test_dir=test_dir)
     if args.mode == 'multiple':
+        start = time.time()
+        model = get_model(weight_path=weight_path)
+        file_names = prepare_output_dir(out_dir=out_dir, test_dir=test_dir)
+
+        logging.info(f'--- Start Deploying the model on {args.test_dir}, distance {args.distance} ---')
+        logging.info(f'Weight used: {args.weight_path}')
+        logging.info(f'Interpolating and writing output images to {args.output_dir}')
         interpolate_ims = deploying(file_names, model, out_dir=out_dir)
+
+        end = time.time()
+        interpolate_time = end - start
+
+        min_psnr, mean_psnr_ycbcr = psnr_folders(test_dir, out_dir)
+        logging.info(f'Min PSNR: {min_psnr :.2f}. Mean PSNR in YCBCR: {mean_psnr_ycbcr :.2f}')
+        logging.info(f'Total number of interpolated images: {interpolate_ims} ')
+        logging.info(f'Time to interpolate {args.test_dir}: {interpolate_time:.2f}s')
+        logging.info(f'--- Done ---')
     else:
-        pass
-
-    end = time.time()
-    interpolate_time = end - start
-
-    min_psnr, mean_psnr_ycbcr = psnr_folders(test_dir, out_dir)
-    logging.info(f'Min PSNR: {min_psnr :.2f}. Mean PSNR in YCBCR: {mean_psnr_ycbcr :.2f}')
-    logging.info(f'Total number of interpolated images: {interpolate_ims} ')
-    logging.info(f'Time to interpolate {args.test_dir}: {interpolate_time:.2f}s')
-    logging.info(f'--- Done ---')
-
+        logging.info(f'--- Not implemented yet ---')
 
 
 

@@ -162,8 +162,8 @@ def train_and_evaluate():
 
                     logging.info(f"--|Evaluating|, Epoch {epoch + 1}/{epochs}.. "
                                  f"Step {steps}.. "
-                                 f"Train loss: {running_loss / params.val_after :.3f}.. "
-                                 f"Val loss: {val_loss / len(val_loader):.3f}.. "
+                                 f"Train loss: {running_loss / params.val_after :.5f}.. "
+                                 f"Val loss: {val_loss / len(val_loader):.5f}.. "
                                  f"Average PSNR: {np.mean(avg_psnr):.3f}")
 
                     train_losses.append(running_loss / params.val_after)
@@ -193,7 +193,7 @@ def train_and_evaluate():
 if __name__ == '__main__':
     train_losses, val_losses, average_psnrs = train_and_evaluate()
 
-    logging.info(f'Saving the plots to {args.save_plots}')
+    logging.info(f'Saving the plots to {plots_dir}')
     # plot the losses and save to plot_dir folder
     plot_losses(train_losses, val_losses)
     losses_figure_name = date_time + '_losses' + '_epochs' + str(epochs) + '_distance' + \

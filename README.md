@@ -71,7 +71,7 @@ optional arguments:
     --output_dir                path to the output directory
     --weight_path WEIGHT_PATH   path to directory that contains the pretrained-weight
     --log_path LOG_PATH         path to the log file that contains information for deploying dslf (time, number of images...)
-    --mode MODE                 choose between 'multiple' to deploy on multiple images (default), or 'one' to deploy on just 1 pair of images
+    --mode MODE                 choose between 'multiple' to deploy on multiple images (default mode), or 'one' to deploy on just 1 pair of images
     --distance DISTANCE         the distance between 2 images in an input pair. If distance is 4, then interpolate between image '0001.png' and '0005.png'
     --image_extension           the extension of the images in the input folder (default: '.png')
 ```
@@ -86,8 +86,8 @@ deploy_camera_rig.py.py [--data_dir DATA_DIR] [--output_dir OUTPUT_DIR]
                         [--image_extension IMAGE_EXTENSION]
 
 optional arguments:
-    --test_dir TEST_DIR         path to directory that contains input images folders
-    --output_dir                path to the directory that contains output images
+    --test_dir TEST_DIR         path to directory that contains the input images folders
+    --output_dir                path to the directory that contains the output images
     --weight_path WEIGHT_PATH   path to the pretrained-weight
     --num_output NUM_OUTPUT     the number of desired interpolated images
     --image_extension           the extension of the images in the input folder (default: '.png')
@@ -102,7 +102,7 @@ transfer_learning.py.py [--train_dir TRAIN_DIR] [--val_dir VAL_DIR]
                         [--save_weights SAVE_WEIGHTS] [--save_plots SAVE_PLOTS] 
                         [--params_path PARAMS_PATH] [--log_path LOG_PATH] 
 optional arguments:
-    --train_dir TRAIN_DIR               path to directory that contains training images
+    --train_dir TRAIN_DIR               path to the directory that contains training images
     --val_dir VAL_DIR                   path to the directory that contains validation images
     --out_dir OUT_DIR                   path to the directory that contains output images
     --load_model LOAD_MODEL             path to the pretrained-weights that you want to fine-tune

@@ -32,3 +32,10 @@
 2019-08-15 13:07:36,942 - INFO -  |Evaluating|, Epoch 3/3.. Step 350.. Train loss: 0.000.. Val loss: 0.000.. Average PSNR: 86.588
 2019-08-15 13:07:50,693 - INFO - Saving the model to 08.15.2019_12-34-51_distance16/epoch003-batch_size1.pytorch...
 2019-08-15 13:07:50,763 - INFO - Saving the plots to images
+2019-08-15 14:43:10,861 - INFO - ---Start Transfer Learning---
+2019-08-15 14:43:10,861 - INFO - Train data directory: data/dslf/train_16
+2019-08-15 14:43:10,861 - INFO - Validation data directory: data/dslf/val_16
+2019-08-15 14:43:10,861 - INFO - Output images directory: outputs/output_transfer_learning
+2019-08-15 14:43:10,862 - INFO - Log info is saved to: log_files/transfer_learning.log
+2019-08-15 14:43:13,435 - INFO - learning rate: 0.0005, kernel_size: 51, epochs: 3, batch_size: 1, val_after: 50 epochs
+2019-08-15 14:43:13,435 - INFO - |Training|, Epoch 1/3
