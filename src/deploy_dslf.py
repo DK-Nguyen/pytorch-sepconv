@@ -6,6 +6,9 @@ The module first get the proper file names for interpolating according to the di
 the output folder, then load the model and do the interpolation. All images of the process will be saved in the
 folder specified by --out_dir. Finally, the model calculates the min and mean PSNR of the interpolated folder
 compared to the images in the ground truth folder.
+
+Command to run the demo:
+python deploy_dslf.py --mode one --test_dir data/dslf/demo --output_dir outputs/output_demo
 """
 
 import torch
@@ -46,8 +49,13 @@ now = datetime.now()
 date_time = now.strftime("%m.%d.%Y")
 project_dir = Path(__file__).parent.parent
 test_dir = Path(project_dir / args.test_dir)
-out_folder_name = date_time + '_' + test_dir.name + '_distance' + str(args.distance)
-out_dir = Path(project_dir / args.output_dir / out_folder_name)
+
+if args.mode == 'multiple':
+    out_folder_name = date_time + '_' + test_dir.name + '_distance' + str(args.distance)
+    out_dir = Path(project_dir / args.output_dir / out_folder_name)
+else:
+    out_dir = Path(project_dir / args.output_dir)
+
 weight_path = Path(project_dir / args.weight_path)
 log_path = Path(project_dir / args.log_path)
 
@@ -176,7 +184,20 @@ if __name__ == '__main__':
         logging.info(f'Time to interpolate {args.test_dir}: {interpolate_time:.2f}s')
         logging.info(f'--- Done ---')
     else:
-        logging.info(f'--- Not implemented yet ---')
-
+        # if mode is 'one': deploying the model on only 1 image (for demo)
+        start = time.time()
+        model = get_model(weight_path=weight_path)
+        logging.info(f'--- Start Demo ---')
+        first_im_path = Path(test_dir / 'first.png')
+        sec_im_path = Path(test_dir / 'sec.png')
+        out_im_path = Path(out_dir / 'interpolated.png')
+        # print(f'Interpolating between {first_im_path} and {sec_im_path}')
+        # read the images into 4-D Tensors and do the interpolation
+        deploying = DeployDslfDataset(first_im_path, sec_im_path)
+        deploying.run_model(model, out_im_path)
+        end = time.time()
+        interpolate_time = end - start
+        logging.info(f'Time to interpolate: {interpolate_time:.2f}s')
+        logging.info(f'--- Start Demo ---')
 
 
