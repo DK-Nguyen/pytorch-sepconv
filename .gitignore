@@ -1,9 +1,12 @@
 .ipynb_checkpoints
 .idea
 __pycache__/
-outputs/*
-data/*
+outputs/output_deploy_camera_rig
+outputs/output_deploy_dslf
+outputs/output_transfer_learning
 !data/dslf/data_prepare.py
+!data/dslf/demo
+data/*
 weights/transfer_learning_weights
 notebooks/
 experiments/dummy_network.py

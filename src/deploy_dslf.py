@@ -185,9 +185,9 @@ if __name__ == '__main__':
         logging.info(f'--- Done ---')
     else:
         # if mode is 'one': deploying the model on only 1 image (for demo)
-        start = time.time()
         model = get_model(weight_path=weight_path)
         logging.info(f'--- Start Demo ---')
+        start = time.time()
         first_im_path = Path(test_dir / 'first.png')
         sec_im_path = Path(test_dir / 'sec.png')
         out_im_path = Path(out_dir / 'interpolated.png')
@@ -198,6 +198,6 @@ if __name__ == '__main__':
         end = time.time()
         interpolate_time = end - start
         logging.info(f'Time to interpolate: {interpolate_time:.2f}s')
-        logging.info(f'--- Start Demo ---')
+        logging.info(f'--- Done Demo! ---')
 
 
