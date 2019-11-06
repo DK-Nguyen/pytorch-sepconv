@@ -153,7 +153,7 @@ class FunctionSepconv(torch.autograd.Function):
         super(FunctionSepconv, self).__init__()
 
     # end
-
+    # @staticmethod
     def forward(self, input, vertical, horizontal):
         self.save_for_backward(input, vertical, horizontal)
 
@@ -202,6 +202,7 @@ class FunctionSepconv(torch.autograd.Function):
 
     # end
 
+    @staticmethod
     def backward(self, gradOutput):
         input, vertical, horizontal = self.saved_tensors
 

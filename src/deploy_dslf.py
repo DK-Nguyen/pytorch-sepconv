@@ -103,7 +103,7 @@ def get_model(weight_path):
 
     return sepconv_model
 
-
+@profile
 def deploying(file_names, model, out_dir):
     """
     doing the interpolation

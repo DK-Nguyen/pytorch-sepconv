@@ -46,3 +46,67 @@
 2019-08-15 13:49:44,322 - INFO - Total number of interpolated images: 189 
 2019-08-15 13:49:44,322 - INFO - Time to interpolate data/dslf/test/icme2: 56.70s
 2019-08-15 13:49:44,322 - INFO - --- Done ---
+2019-11-06 12:49:37,541 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-11-06 12:49:37,541 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-11-06 12:49:37,541 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-11-06 12:49:37,542 - INFO - Round #1, number of images to interpolate: 3
+2019-11-06 12:49:38,581 - INFO - Round #2, number of images to interpolate: 6
+2019-11-06 12:49:39,926 - INFO - Round #3, number of images to interpolate: 12
+2019-11-06 12:49:42,600 - INFO - Round #4, number of images to interpolate: 24
+2019-11-06 12:49:47,949 - INFO - Round #5, number of images to interpolate: 48
+2019-11-06 12:49:58,817 - INFO - Round #6, number of images to interpolate: 96
+2019-11-06 12:53:42,377 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-11-06 12:53:42,377 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-11-06 12:53:42,377 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-11-06 12:53:42,377 - INFO - Round #1, number of images to interpolate: 3
+2019-11-06 12:54:27,924 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-11-06 12:54:27,924 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-11-06 12:54:27,924 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-11-06 12:54:27,924 - INFO - Round #1, number of images to interpolate: 3
+2019-11-06 12:54:28,916 - INFO - Round #2, number of images to interpolate: 6
+2019-11-06 12:54:30,294 - INFO - Round #3, number of images to interpolate: 12
+2019-11-06 12:54:33,020 - INFO - Round #4, number of images to interpolate: 24
+2019-11-06 12:55:28,712 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-11-06 12:55:28,712 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-11-06 12:55:28,712 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-11-06 12:55:28,712 - INFO - Round #1, number of images to interpolate: 3
+2019-11-06 12:56:52,586 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-11-06 12:56:52,586 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-11-06 12:56:52,587 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-11-06 12:56:52,587 - INFO - Round #1, number of images to interpolate: 3
+2019-11-06 12:56:53,552 - INFO - Round #2, number of images to interpolate: 6
+2019-11-06 12:56:54,931 - INFO - Round #3, number of images to interpolate: 12
+2019-11-06 12:59:12,041 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-11-06 12:59:12,041 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-11-06 12:59:12,041 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-11-06 12:59:12,041 - INFO - Round #1, number of images to interpolate: 3
+2019-11-06 12:59:12,996 - INFO - Round #2, number of images to interpolate: 6
+2019-11-06 12:59:14,366 - INFO - Round #3, number of images to interpolate: 12
+2019-11-06 12:59:26,139 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-11-06 12:59:26,139 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-11-06 12:59:26,139 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-11-06 12:59:26,139 - INFO - Round #1, number of images to interpolate: 3
+2019-11-06 12:59:27,135 - INFO - Round #2, number of images to interpolate: 6
+2019-11-06 12:59:28,531 - INFO - Round #3, number of images to interpolate: 12
+2019-11-06 12:59:31,305 - INFO - Round #4, number of images to interpolate: 24
+2019-11-06 12:59:36,909 - INFO - Round #5, number of images to interpolate: 48
+2019-11-06 12:59:48,537 - INFO - Round #6, number of images to interpolate: 96
+2019-11-06 13:00:11,311 - INFO - Evaluating the results...
+2019-11-06 13:00:22,850 - INFO - Min PSNR: 16.66. Mean PSNR in YCBCR: 23.13
+2019-11-06 13:00:22,850 - INFO - Total number of interpolated images: 189 
+2019-11-06 13:00:22,850 - INFO - Time to interpolate data/dslf/test/icme2: 47.70s
+2019-11-06 13:00:22,850 - INFO - --- Done ---
+2019-11-06 13:01:49,350 - INFO - --- Start Deploying the model on data/dslf/test/icme2, distance 64 ---
+2019-11-06 13:01:49,351 - INFO - Weight used: weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch
+2019-11-06 13:01:49,351 - INFO - Interpolating and writing output images to outputs/output_deploy_dslf
+2019-11-06 13:01:49,351 - INFO - Round #1, number of images to interpolate: 3
+2019-11-06 13:01:50,322 - INFO - Round #2, number of images to interpolate: 6
+2019-11-06 13:01:51,727 - INFO - Round #3, number of images to interpolate: 12
+2019-11-06 13:01:54,500 - INFO - Round #4, number of images to interpolate: 24
+2019-11-06 13:02:00,226 - INFO - Round #5, number of images to interpolate: 48
+2019-11-06 13:02:11,775 - INFO - Round #6, number of images to interpolate: 96
+2019-11-06 13:02:34,939 - INFO - Evaluating the results...
+2019-11-06 13:02:46,307 - INFO - Min PSNR: 16.66. Mean PSNR in YCBCR: 23.13
+2019-11-06 13:02:46,307 - INFO - Total number of interpolated images: 189 
+2019-11-06 13:02:46,307 - INFO - Time to interpolate data/dslf/test/icme2: 48.04s
+2019-11-06 13:02:46,307 - INFO - --- Done ---
