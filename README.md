@@ -16,13 +16,12 @@ Frame interpolation is a classic computer vision problem which tries to generate
     <img src="images/frameInterpolation.jpg" alt><br>
     <em>Figure 1: Frame interpolation</em>
 </p>
-
 This project deploys the Video Frame Interpolation via Adaptive Separable Convolution [1] on the densly sampled lightfield images. Given two frames, it will make use of [adaptive convolution](http://graphics.cs.pdx.edu/project/adaconv) [2] in a separable manner to interpolate the intermediate frame.  
 
 ### Differences from original code
 The model is split into 2 parts: the `feature_extraction` part and the `separable_convolution` part (the red box in figure 2) for transfer learning.  Also, the pretrained weights are also split into corresponding parts so we can fine-tune them with new data.  
 <p align="center">
-    <img src="images/Model.png" alt>
+    <img src="images/model.png" alt>
     <em>Figure 2: Separable Convolution Neural Network Architecture</em>
 </p>
 There are also scripts for deploying the model on images depending on situations (further explaination below).  

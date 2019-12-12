@@ -27,9 +27,9 @@ from utils.data_handler import DeployDslfDataset
 
 parser = argparse.ArgumentParser(description='Deploying SepConv Pretrained Model on DSLF Dataset')
 
-parser.add_argument('--test_dir', type=str, default='data/dslf/test/icme2',
+parser.add_argument('--test_dir', type=str, default='data/dslf/demo',
                     help='directory that contains input images')
-parser.add_argument('--output_dir', type=str, default='outputs/output_deploy_dslf',
+parser.add_argument('--output_dir', type=str, default='outputs/output_demo',
                     help='directory that contains output images')
 parser.add_argument('--weight_path', type=str,
                     default='weights/deploy_weights/epoch002-batch_size1-08.13.2019_13-37-44_distance16-lr0.0005.pytorch')
@@ -104,7 +104,6 @@ def get_model(weight_path):
     return sepconv_model
 
 
-@profile
 def deploying(file_names, model, out_dir):
     """
     doing the interpolation
