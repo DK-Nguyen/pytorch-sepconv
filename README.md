@@ -118,6 +118,7 @@ Intel core i7 4.20GHz (8 CPUs), 32Gb Ram.
 GPU: NVIDIA GeForce GTX 1080, 8Gb GPU Memory
 * Time  
 ~45s for deploying 1 folder of 193 images of size (1200, 720) with distance 4.
+* PSNR  
 <p align="center">
     <img src="images/psnr.png" alt><br>
 </p>
