@@ -1,5 +1,4 @@
-# Frame Interpolation on Densly Sampled Lightfield Images
-This project is forked from https://github.com/HyeongminLEE/pytorch-sepconv as the starting point.  
+# Frame Interpolation on Densly Sampled Lightfield Images  
 ## Outline
 * [Introduction](#Introduction)
 * [Differences from original code](#Differences-from-original-code)
@@ -141,3 +140,4 @@ GPU: NVIDIA GeForce GTX 1080, 8Gb GPU Memory
          year = {2017}
      }
 ```
+https://github.com/HyeongminLEE/pytorch-sepconv
